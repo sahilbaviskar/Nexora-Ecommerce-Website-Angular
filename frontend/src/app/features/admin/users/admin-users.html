@@ -1,0 +1,76 @@
+<div class="p-4 md:p-8">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl md:text-2xl font-bold text-gray-900">Users</h1>
+    <span class="text-sm text-gray-500">{{ filtered.length }} users</span>
+  </div>
+
+  <div class="mb-4">
+    <input [(ngModel)]="search" (ngModelChange)="applyFilter()" type="text"
+           placeholder="Search by name or email…"
+           class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black w-full sm:w-64"/>
+  </div>
+
+  @if (error) {
+    <div class="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">{{ error }}</div>
+  }
+
+  @if (loading) {
+    <div class="flex items-center justify-center h-48 text-gray-400">Loading users…</div>
+  } @else {
+
+    <!-- Desktop table -->
+    <div class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
+            <tr>
+              <th class="px-6 py-3 text-left">Name</th>
+              <th class="px-6 py-3 text-left">Email</th>
+              <th class="px-6 py-3 text-left">Role</th>
+              <th class="px-6 py-3 text-left">Joined</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            @for (user of filtered; track user._id) {
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-3 font-medium text-gray-800">{{ user.name }}</td>
+                <td class="px-6 py-3 text-gray-500">{{ user.email }}</td>
+                <td class="px-6 py-3">
+                  <span [class]="(user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-600') + ' px-2 py-0.5 rounded-full text-xs font-medium'">
+                    {{ user.role }}
+                  </span>
+                </td>
+                <td class="px-6 py-3 text-xs text-gray-500">{{ user.createdAt | date:'dd MMM y' }}</td>
+              </tr>
+            }
+            @empty {
+              <tr><td colspan="4" class="px-6 py-10 text-center text-gray-400">No users found.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Mobile cards -->
+    <div class="md:hidden space-y-3">
+      @for (user of filtered; track user._id) {
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="font-medium text-gray-800 text-sm">{{ user.name }}</p>
+              <p class="text-xs text-gray-400 mt-0.5">{{ user.email }}</p>
+            </div>
+            <span [class]="(user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-600') + ' px-2 py-0.5 rounded-full text-xs font-medium'">
+              {{ user.role }}
+            </span>
+          </div>
+          <p class="text-xs text-gray-400 mt-2">Joined {{ user.createdAt | date:'dd MMM y' }}</p>
+        </div>
+      }
+      @if (filtered.length === 0) {
+        <p class="text-center text-gray-400 py-10">No users found.</p>
+      }
+    </div>
+
+  }
+</div>

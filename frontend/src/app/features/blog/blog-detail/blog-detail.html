@@ -1,0 +1,154 @@
+<section class="min-h-[calc(100dvh-80px)] px-6 lg:px-10 py-10 max-w-320 mx-auto">
+
+  <hr class="h-px bg-gray-200 border-0 mb-8">
+
+  <!-- loading skeleton -->
+  @if (loading) {
+    <div class="animate-pulse max-w-200 mx-auto">
+      <div class="h-4 bg-gray-200 rounded w-1/3 mb-6"></div>
+      <div class="h-8 bg-gray-200 rounded w-3/4 mb-3"></div>
+      <div class="h-8 bg-gray-200 rounded w-1/2 mb-8"></div>
+      <div class="rounded-3xl bg-gray-200 aspect-video mb-8"></div>
+      <div class="space-y-3">
+        @for (i of [1,2,3,4,5]; track i) {
+          <div class="h-4 bg-gray-200 rounded w-full"></div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- error -->
+  @if (!loading && error) {
+    <div class="text-center py-20">
+      <p class="text-gray-500 text-lg mb-4">{{ error }}</p>
+      <a routerLink="/blog" class="text-sm font-semibold text-[#96a180] hover:underline">← Back to Blog</a>
+    </div>
+  }
+
+  @if (!loading && !error && blog) {
+    <!-- breadcrumb -->
+    <nav class="flex items-center gap-1.5 text-xs text-gray-500 uppercase tracking-wide mb-8">
+      <a routerLink="/" class="hover:text-black transition">Home</a>
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.59L10 18l6-6l-6-6l-1.41 1.41L13.17 12z"/></svg>
+      <a routerLink="/blog" class="hover:text-black transition">Blog</a>
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.59L10 18l6-6l-6-6l-1.41 1.41L13.17 12z"/></svg>
+      <span class="text-gray-600 truncate max-w-48">{{ blog.category }}</span>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+      <!-- ── MAIN CONTENT ── -->
+      <article class="lg:col-span-2">
+        <!-- category + meta -->
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="bg-[#96a180] text-white text-xs font-semibold px-3 py-1 rounded-full">{{ blog.category }}</span>
+          <span class="text-gray-400 text-xs">{{ blog.readTime }} min read</span>
+          <span class="text-gray-400 text-xs">{{ blog.publishedAt | date:'longDate' }}</span>
+        </div>
+
+        <!-- title -->
+        <h1 class="text-3xl md:text-4xl font-semibold font-inter leading-tight mb-6">{{ blog.title }}</h1>
+
+        <!-- author -->
+        <div class="flex items-center gap-3 mb-8 pb-8 border-b border-gray-100">
+          <div class="w-10 h-10 rounded-full bg-[#96a180] text-white flex items-center justify-center font-bold uppercase shrink-0">
+            {{ blog.author.name.charAt(0) }}
+          </div>
+          <div>
+            <p class="text-sm font-semibold">{{ blog.author.name }}</p>
+            <p class="text-xs text-gray-400">{{ blog.author.role }}</p>
+          </div>
+        </div>
+
+        <!-- hero image -->
+        <div class="rounded-3xl overflow-hidden aspect-video mb-10 bg-gray-100">
+          <img [src]="blog.image" [alt]="blog.title" class="w-full h-full object-cover" />
+        </div>
+
+        <!-- excerpt lead -->
+        <p class="text-lg text-gray-600 leading-relaxed mb-8 font-inter italic border-l-4 border-[#96a180] pl-5">
+          {{ blog.excerpt }}
+        </p>
+
+        <!-- content blocks -->
+        @if (blog.content) {
+          <div class="prose-content space-y-5 text-gray-700 leading-relaxed">
+            @for (block of blog.content; track $index) {
+              @if (block.type === 'heading') {
+                <h2 class="text-xl md:text-2xl font-semibold font-inter text-gray-900 mt-8 mb-3">{{ block.text }}</h2>
+              }
+              @if (block.type === 'paragraph') {
+                <p class="text-base leading-8">{{ block.text }}</p>
+              }
+              @if (block.type === 'quote') {
+                <blockquote class="border-l-4 border-[#96a180] pl-5 py-1 my-6 bg-gray-50 rounded-r-2xl">
+                  <p class="text-gray-600 italic text-base">{{ block.text }}</p>
+                </blockquote>
+              }
+              @if (block.type === 'list' && block.items) {
+                <ul class="space-y-2 pl-4">
+                  @for (item of block.items; track $index) {
+                    <li class="flex items-start gap-2 text-base">
+                      <span class="mt-2 w-1.5 h-1.5 rounded-full bg-[#96a180] shrink-0"></span>
+                      {{ item }}
+                    </li>
+                  }
+                </ul>
+              }
+            }
+          </div>
+        }
+
+        <!-- tags -->
+        @if (blog.tags.length > 0) {
+          <div class="flex flex-wrap gap-2 mt-10 pt-8 border-t border-gray-100">
+            @for (tag of blog.tags; track tag) {
+              <span class="text-xs border border-gray-300 px-3 py-1 rounded-full text-gray-500 hover:border-black hover:text-black transition cursor-pointer">
+                #{{ tag }}
+              </span>
+            }
+          </div>
+        }
+
+        <!-- back link -->
+        <div class="mt-10">
+          <a routerLink="/blog" class="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-black transition">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6l6 6z"/></svg>
+            Back to Blog
+          </a>
+        </div>
+      </article>
+
+      <!-- ── SIDEBAR ── -->
+      <aside class="lg:col-span-1">
+        <!-- related posts -->
+        @if (relatedBlogs.length > 0) {
+          <div class="sticky top-8">
+            <h3 class="text-base font-semibold font-inter mb-5">Related Posts</h3>
+            <div class="space-y-5">
+              @for (related of relatedBlogs; track related._id) {
+                <a [routerLink]="['/blog', related.slug]" class="flex gap-3 group">
+                  <div class="w-20 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                    <img [src]="related.image" [alt]="related.title" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium font-inter leading-snug group-hover:text-[#96a180] transition line-clamp-2">{{ related.title }}</p>
+                    <p class="text-xs text-gray-400 mt-1">{{ related.readTime }} min · {{ related.publishedAt | date:'mediumDate' }}</p>
+                  </div>
+                </a>
+              }
+            </div>
+
+            <!-- all posts cta -->
+            <a routerLink="/blog" class="mt-8 flex items-center justify-center gap-1.5 w-full py-3 rounded-full border border-gray-300 text-sm font-medium hover:border-black hover:bg-black hover:text-white transition">
+              View All Posts
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.59L10 18l6-6l-6-6l-1.41 1.41L13.17 12z"/></svg>
+            </a>
+          </div>
+        }
+      </aside>
+
+    </div>
+  }
+
+</section>

@@ -1,0 +1,813 @@
+<header class="bg-white">
+  <!-- Announcement bar -->
+  @if (announcementVisible()) {
+    <div class="bg-black text-white text-xs sm:text-sm py-2.5 px-4 flex items-center justify-center gap-2 sm:gap-3 relative">
+      <span class="text-yellow-400 text-base leading-none">🔥</span>
+      <span class="font-medium tracking-wide">SUMMER SALE — Extra 20% off on orders above ₹999. Ends in:</span>
+      <span class="font-mono font-bold text-yellow-400 tabular-nums">{{ countdownDisplay() }}</span>
+      <button
+        (click)="dismissAnnouncement()"
+        class="absolute right-3 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 transition cursor-pointer"
+        aria-label="Dismiss announcement"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+          <path fill="white" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+    </div>
+  }
+
+  <div class="w-full px-6 lg:px-10 py-3">
+    <div class="flex items-center justify-between">
+      <!-- left  -->
+      <div class="flex items-center gap-4">
+        <h1 class="font-extrabold text-xl md:text-3xl font-inter text-[#96a180] cursor-pointer"><a routerLink="/">Nexora</a></h1>
+      </div>
+
+      <!-- center  -->
+      <div class="hidden md:flex items-center gap-6 flex-1 px-8">
+        <!-- search  -->
+        <div class="hidden lg:block relative w-full max-w-70 xl:max-w-90 2xl:max-w-105">
+          <div class="flex items-center rounded-full px-4 py-1 w-full outline outline-gray-300">
+            <input
+              class="bg-transparent outline-none w-full font-inter"
+              type="search"
+              id="desktop-search"
+              name="desktop-search"
+              aria-label="Search products"
+              placeholder="Search here"
+              [(ngModel)]="searchQuery"
+              (input)="onSearch()"
+              (keyup.enter)="goToSearch()"
+              (blur)="closeSearch()"
+            />
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+                <path
+                  fill="gray"
+                  d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5A6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5S14 7.01 14 9.5S11.99 14 9.5 14"
+                />
+              </svg>
+            </span>
+          </div>
+
+          <!-- search dropdown backdrop -->
+          @if (isSearchOpen) {
+            <div class="fixed inset-0 z-40" (click)="isSearchOpen = false" (keydown)="isSearchOpen = false"></div>
+          }
+
+          <!-- search dropdown  -->
+          @if (isSearchOpen) {
+            <div class="absolute top-full mt-2 left-0 w-full bg-white rounded-2xl shadow-xl border z-50 max-h-80 overflow-y-auto scrollbar-hidden">
+              @for (product of searchResults; track product.id) {
+                <div (mousedown)="goToProduct(product)" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
+                  <img
+                    [src]="product.image"
+                    [alt]="product.title"
+                    class="w-10 h-10 rounded-lg object-cover"
+                  />
+                  <div>
+                    <p class="text-sm font-medium font-inter">{{ product.title }}</p>
+                    <p class="text-xs text-gray-400 capitalize">{{product.category}}/{{product.subcategory}}</p>
+                  </div>
+                  <span class="ml-auto text-sm font-semibold">₹{{product.price}}</span>
+                </div>
+              }
+              <!-- view all results -->
+              <div (mousedown)="goToSearch()" class="flex items-center justify-between px-4 py-3 border-t border-gray-100 hover:bg-gray-50 cursor-pointer transition">
+                <span class="text-sm font-medium text-[#96a180]">View all {{ searchResults.length }} results for "{{ searchQuery }}"</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" class="text-[#96a180]"><path fill="currentColor" d="M8.59 16.59L10 18l6-6l-6-6l-1.41 1.41L13.17 12z"/></svg>
+              </div>
+            </div>
+          }
+        </div>
+
+
+
+        <!-- Tablet search icon (md to lg) -->
+        <div class="lg:hidden relative">
+          <button (click)="toggleTabletSearch()" class="cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+              <path
+                fill="gray"
+                d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5A6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5S14 7.01 14 9.5S11.99 14 9.5 14"
+              />
+            </svg>
+          </button>
+
+          <!-- Tablet search backdrop -->
+          @if (isTabletSearchOpen) {
+            <div class="fixed inset-0 z-40" (click)="toggleTabletSearch()"></div>
+          }
+
+          <!-- Tablet search dropdown -->
+          @if (isTabletSearchOpen) {
+            <div class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 bg-white rounded-2xl shadow-xl border z-50 p-3">
+            <div class="flex items-center rounded-full px-4 py-1 outline outline-gray-300">
+              <input
+                class="bg-transparent outline-none w-full font-inter text-sm"
+                type="text"
+                placeholder="Search here"
+                [(ngModel)]="searchQuery"
+                (input)="onSearch()"
+                (keyup.enter)="goToSearch()"
+              />
+            </div>
+            <div class="mt-2 max-h-60 overflow-y-auto scrollbar-hidden">
+              @if (isSearchOpen) {
+                @for (product of searchResults; track product.id) {
+                  <div (mousedown)="goToProduct(product); isTabletSearchOpen = false" class="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 cursor-pointer transition rounded-lg">
+                    <img [src]="product.image" [alt]="product.title" class="w-9 h-9 rounded-lg object-cover" />
+                    <div class="min-w-0 flex-1">
+                      <p class="text-sm font-medium font-inter truncate">{{ product.title }}</p>
+                      <p class="text-xs text-gray-400 capitalize">{{ product.category }}</p>
+                    </div>
+                    <span class="text-sm font-semibold shrink-0">₹{{ product.price }}</span>
+                  </div>
+                }
+                <!-- view all results -->
+                <div (mousedown)="goToSearch()" class="flex items-center justify-between px-3 py-2 border-t border-gray-100 hover:bg-gray-50 cursor-pointer transition rounded-lg mt-1">
+                  <span class="text-xs font-medium text-[#96a180]">View all {{ searchResults.length }} results</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" class="text-[#96a180]"><path fill="currentColor" d="M8.59 16.59L10 18l6-6l-6-6l-1.41 1.41L13.17 12z"/></svg>
+                </div>
+              }
+            </div>
+          </div>
+          }
+
+        </div>
+
+        <!-- Category  -->
+        <div class="flex items-center gap-6 shrink-0">
+         
+          <div class="relative group">
+            
+            <div class="flex items-center gap-6 shrink-0 group">
+             
+              <button class="flex items-center whitespace-nowrap font-medium font-inter">
+                All Category
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  class="transition-transform duration-300 group-hover:rotate-180"
+                >
+                  <path
+                    fill="currentColor"
+                    d="m12 15l-4.243-4.242l1.415-1.414L12 12.172l2.828-2.828l1.415 1.414z"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            
+            <div class="absolute left-0 top-full h-6 w-full"></div>
+
+           
+            <div
+              class="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block bg-white shadow-xl rounded-b-3xl z-50 mt-2 overflow-hidden w-fit min-[1080px]:w-225 min-[1280px]:w-275 min-[1440px]:w-325"
+            >
+              
+              <div class="mx-auto px-6 py-8 overflow-hidden">
+                <div class="flex gap-8">
+                 
+                  <div
+                    class="grid grid-cols-2 gap-8 shrink-0 w-75 min-[1080px]:w-[320px] min-[1280px]:w-90"
+                  >
+                    
+                    <div>
+                      <h4 class="font-semibold text-lg mb-4">
+                        <a [routerLink]="['/products', 'men']" [queryParams]="{}">Men</a>
+                      </h4>
+                      <ul class="space-y-3 text-gray-500">
+                        <li>
+                          <a
+                            [routerLink]="['/products', 'men', 't-shirts']"
+                            class="hover:text-black"
+                            >T-Shirts</a
+                          >
+                        </li>
+                        <li>
+                          <a [routerLink]="['/products', 'men', 'shoes']" class="hover:text-black"
+                            >Shoes</a
+                          >
+                        </li>
+                        <li>
+                          <a [routerLink]="['/products', 'men', 'shorts']" class="hover:text-black"
+                            >Shorts</a
+                          >
+                        </li>
+                        <li>
+                          <a [routerLink]="['/products', 'men', 'jackets']" class="hover:text-black"
+                            >Jackets</a
+                          >
+                        </li>
+                        <li>
+                          <a [routerLink]="['/products', 'men', 'hats']" class="hover:text-black"
+                            >Hats</a
+                          >
+                        </li>
+                        <li>
+                          <a [routerLink]="['/products', 'men', 'watches']" class="hover:text-black"
+                            >Watches</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            [routerLink]="['/products', 'men', 'accessories']"
+                            class="hover:text-black"
+                            >Accessories</a
+                          >
+                        </li>
+                      </ul>
+                      <h4 class="font-semibold text-lg mt-4">
+                        <a [routerLink]="['/products', 'kids']" [queryParams]="{}">Kids</a>
+                      </h4>
+                    </div>
+
+                    
+                    <div>
+                      <h4 class="font-semibold text-lg mb-4">
+                        <a [routerLink]="['/products', 'women']" [queryParams]="{}">Women</a>
+                      </h4>
+                      <ul class="space-y-3 text-gray-500">
+                        <li>
+                          <a
+                            [routerLink]="['/products', 'women', 'dresses']"
+                            class="hover:text-black"
+                            >Dresses</a
+                          >
+                        </li>
+                        <li>
+                          <a [routerLink]="['/products', 'women', 'heels']" class="hover:text-black"
+                            >Heels</a
+                          >
+                        </li>
+                        <li>
+                          <a [routerLink]="['/products', 'women', 'shoes']" class="hover:text-black"
+                            >Shoes</a
+                          >
+                        </li>
+                        <li>
+                          <a [routerLink]="['/products', 'women', 'bags']" class="hover:text-black"
+                            >Bags</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            [routerLink]="['/products', 'women', 'jackets']"
+                            class="hover:text-black"
+                            >Jackets</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            [routerLink]="['/products', 'women', 't-shirts']"
+                            class="hover:text-black"
+                            >T-Shirts</a
+                          >
+                        </li>
+                        <li>
+                          <a
+                            [routerLink]="['/products', 'women', 'accessories']"
+                            class="hover:text-black"
+                            >Accessories</a
+                          >
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <!-- RIGHT SIDE: Image Cards -->
+                  <div class="hidden min-[1080px]:flex flex-1 gap-4">
+                    <!-- CARD 1 -->
+                    <div class="relative flex-1 rounded-2xl overflow-hidden group cursor-pointer">
+                      <img
+                        src="/hero/allCategory1.webp"
+                        alt=""
+                        class="w-full h-50 min-[1280px]:h-60 min-[1440px]:h-65 object-cover transition duration-500 group-hover:scale-105"
+                      />
+                      <div class="absolute inset-0 bg-black/30"></div>
+
+                      <div class="absolute bottom-4 left-4 text-white">
+                        <p class="text-xs opacity-80">NEW SEASON</p>
+                        <h3 class="text-lg font-semibold leading-tight">
+                          The Modern <br />
+                          Minimalist Series '24
+                        </h3>
+                      </div>
+                    </div>
+
+                    <!-- CARD 2 -->
+                    <div class="relative flex-1 rounded-2xl overflow-hidden group cursor-pointer">
+                      <img
+                        src="/hero/allCategory2.avif"
+                        alt=""
+                        class="w-full h-50 min-[1280px]:h-60 min-[1440px]:h-65 object-cover transition duration-500 group-hover:scale-105"
+                      />
+                      <div class="absolute inset-0 bg-black/30"></div>
+
+                      <div class="absolute bottom-4 left-4 text-white">
+                        <p class="text-xs opacity-80">COLLECTION</p>
+                        <h3 class="text-lg font-semibold leading-tight">
+                          Artisan Textures <br />
+                          & Raw Materials
+                        </h3>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Gift Cards dropdown -->
+          <div class="relative group">
+            <button class="flex items-center gap-1 whitespace-nowrap font-medium font-inter cursor-pointer">
+              Gift Cards
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="transition-transform duration-300 group-hover:rotate-180">
+                <path fill="currentColor" d="m12 15l-4.243-4.242l1.415-1.414L12 12.172l2.828-2.828l1.415 1.414z"/>
+              </svg>
+            </button>
+
+            <!-- hover bridge -->
+            <div class="absolute left-0 top-full h-4 w-full"></div>
+
+            <!-- dropdown panel -->
+            <div class="absolute left-1/2 -translate-x-1/2 top-full mt-4 hidden group-hover:block bg-white shadow-2xl rounded-2xl z-50 w-120 overflow-hidden border border-gray-100">
+              <div class="px-6 py-5">
+                <!-- header row -->
+                <div class="flex items-center gap-2 mb-5 pb-4 border-b border-gray-100">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path fill="#e11d48" d="M20 12v-2h-1.42A3.49 3.49 0 0 0 19 8.5C19 6.57 17.43 5 15.5 5c-1.03 0-1.95.42-2.62 1.09L12 7l-.88-.91A3.48 3.48 0 0 0 8.5 5C6.57 5 5 6.57 5 8.5c0 .69.21 1.33.54 1.88L5 10.28V12H4v2h1v7h14v-7h1v-2zm-4.5-5c.83 0 1.5.67 1.5 1.5S16.33 10 15.5 10H13V9.5c0-.83.67-1.5 1.5-1.5zm-7 0c.83 0 1.5.67 1.5 1.5V10H8.5C7.67 10 7 9.33 7 8.5S7.67 7 8.5 7zM7 19v-7h5v7zm7 0v-7h3v7z"/></svg>
+                  <span class="font-semibold text-base font-inter">Gift Cards</span>
+                  <span class="ml-auto text-xs bg-rose-50 text-rose-500 font-semibold px-2 py-0.5 rounded-full">Up to ₹5000</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                  <!-- By Occasion -->
+                  <div>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">By Occasion</p>
+                    <ul class="space-y-2.5 text-sm text-gray-600">
+                      <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>🎂</span> Birthday</a></li>
+                      <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>💍</span> Anniversary</a></li>
+                      <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>💒</span> Wedding</a></li>
+                      <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>🎊</span> Festivals</a></li>
+                      <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>🙏</span> Thank You</a></li>
+                      <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>👫</span> Friendship</a></li>
+                    </ul>
+                  </div>
+
+                  <!-- Card Types & Actions -->
+                  <div>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Card Type</p>
+                    <ul class="space-y-2.5 text-sm text-gray-600">
+                      <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>📧</span> E-Gift Card</a></li>
+                      <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>📦</span> Physical Card</a></li>
+                      <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>🏢</span> Corporate Gifting</a></li>
+                      <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>👥</span> Bulk Orders</a></li>
+                    </ul>
+                    <div class="mt-4 pt-3 border-t border-gray-100 space-y-2">
+                      <a href="#" class="flex items-center gap-2 text-sm text-[#96a180] font-semibold hover:underline">💳 Check Your Balance</a>
+                      <a href="#" class="flex items-center gap-2 text-sm text-[#96a180] font-semibold hover:underline">🎁 Redeem a Gift Card</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Special Events dropdown -->
+          <div class="relative group">
+            <button class="flex items-center gap-1 whitespace-nowrap font-medium font-inter cursor-pointer">
+              Special Events
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" class="transition-transform duration-300 group-hover:rotate-180">
+                <path fill="currentColor" d="m12 15l-4.243-4.242l1.415-1.414L12 12.172l2.828-2.828l1.415 1.414z"/>
+              </svg>
+            </button>
+
+            <!-- hover bridge -->
+            <div class="absolute left-0 top-full h-4 w-full"></div>
+
+            <!-- dropdown panel -->
+            <div class="absolute right-0 top-full mt-4 hidden group-hover:block bg-white shadow-2xl rounded-2xl z-50 w-150 overflow-hidden border border-gray-100">
+              <!-- sale banner -->
+              <div class="bg-linear-to-r from-orange-500 to-rose-500 px-6 py-3 flex items-center justify-between">
+                <div>
+                  <p class="text-white font-bold text-sm">🔥 Flash Sale — Up to 50% Off</p>
+                  <p class="text-orange-100 text-xs mt-0.5">Limited time · Ends midnight</p>
+                </div>
+                <a href="#" class="bg-white text-orange-600 text-xs font-bold px-3 py-1.5 rounded-full hover:bg-orange-50 transition shrink-0">Shop Now</a>
+              </div>
+
+              <div class="px-6 py-5 grid grid-cols-3 gap-6">
+                <!-- Active Sales -->
+                <div>
+                  <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Active Sales</p>
+                  <ul class="space-y-2.5 text-sm text-gray-600">
+                    <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>🔥</span> Flash Sale</a></li>
+                    <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>⚡</span> Weekend Deals</a></li>
+                    <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>💯</span> Mega Sale</a></li>
+                    <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>🏷️</span> Clearance</a></li>
+                  </ul>
+                </div>
+
+                <!-- Collections -->
+                <div>
+                  <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Collections</p>
+                  <ul class="space-y-2.5 text-sm text-gray-600">
+                    <li><a [routerLink]="['/collections']" class="flex items-center gap-2 hover:text-black transition"><span>✨</span> New Arrivals</a></li>
+                    <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>📈</span> Best Sellers</a></li>
+                    <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>🔮</span> Trending Now</a></li>
+                    <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>💎</span> Limited Edition</a></li>
+                  </ul>
+                </div>
+
+                <!-- Festival Specials -->
+                <div>
+                  <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Festival Specials</p>
+                  <ul class="space-y-2.5 text-sm text-gray-600">
+                    <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>🪔</span> Diwali Special</a></li>
+                    <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>☀️</span> Summer Edit</a></li>
+                    <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>🎆</span> New Year Deals</a></li>
+                    <li><a href="#" class="flex items-center gap-2 hover:text-black transition"><span>💝</span> Valentine's</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- right  -->
+      <div class="flex items-center gap-4">
+        <!-- desktop  -->
+        <div class="hidden md:flex items-center gap-4">
+          <button routerLink="/wishlist" class="cursor-pointer relative">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M11.98 19.094q-.291 0-.577-.106q-.286-.105-.503-.323L9.752 17.63q-2.67-2.425-4.71-4.717Q3 10.622 3 8.15q0-1.908 1.296-3.204T7.5 3.65q1.094 0 2.279.553T12 6.289q1.037-1.533 2.221-2.086T16.5 3.65q1.908 0 3.204 1.296T21 8.15q0 2.529-2.125 4.862t-4.652 4.622l-1.142 1.031q-.218.218-.513.323t-.587.106m-.47-11.767q-.898-1.448-1.867-2.063Q8.675 4.65 7.5 4.65q-1.5 0-2.5 1t-1 2.5q0 1.108.627 2.272q.627 1.165 1.684 2.386q1.056 1.22 2.429 2.498q1.371 1.277 2.856 2.629q.173.154.404.154t.404-.154q1.485-1.352 2.857-2.63q1.372-1.276 2.429-2.497q1.056-1.222 1.683-2.386T20 8.15q0-1.5-1-2.5t-2.5-1q-1.175 0-2.144.615q-.97.614-1.867 2.062q-.08.135-.214.202T12 7.596t-.275-.067t-.213-.202M12 11.398"
+              />
+            </svg>
+            @if (wishlistService.getCount() > 0) {
+              <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4.5 h-4.5 flex items-center justify-center rounded-full">{{ wishlistService.getCount() }}</span>
+            }
+          </button>
+          <button [routerLink]="authService.isLoggedIn() ? '/profile' : '/login'" class="cursor-pointer">
+            @if (authService.isLoggedIn()) {
+              <div class="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm font-semibold uppercase">
+                {{ authService.getUser()?.name?.charAt(0) || 'U' }}
+              </div>
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+                <g fill="none" stroke="currentColor" stroke-width="1">
+                  <path
+                    stroke-linejoin="round"
+                    d="M4 18a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"
+                  />
+                  <circle cx="12" cy="7" r="3" />
+                </g>
+              </svg>
+            }
+          </button>
+          <button routerLink="/cart" class="cursor-pointer relative">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M7.308 21.116q-.633 0-1.067-.434t-.433-1.066t.433-1.067q.434-.433 1.067-.433t1.066.433t.434 1.067t-.434 1.066t-1.066.434m9.384 0q-.632 0-1.066-.434t-.434-1.066t.434-1.067q.434-.433 1.066-.433t1.067.433q.433.434.433 1.067q0 .632-.433 1.066q-.434.434-1.067.434M5.881 5.5l2.669 5.616h6.635q.173 0 .307-.087q.135-.087.231-.24l2.616-4.75q.115-.212.019-.375q-.097-.164-.327-.164zm-.489-1h13.02q.651 0 .98.532q.33.531.035 1.095l-2.858 5.208q-.217.365-.564.573t-.763.208H8.1l-1.215 2.23q-.154.231-.01.5t.433.27h10.884v1H7.308q-.875 0-1.306-.738t-.021-1.482l1.504-2.68L3.808 3.5H2v-1h2.442zm3.158 6.616h7z"
+              />
+            </svg>
+            @if (cartService.getCount() > 0) {
+              <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4.5 h-4.5 flex items-center justify-center rounded-full">{{ cartService.getCount() }}</span>
+            }
+          </button>
+        </div>
+        <!-- mobile menu  -->
+        <button class="md:hidden text-xl" (click)="toogleMenu()" aria-label="Open navigation menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 48 48">
+            <path
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="4"
+              d="M7.95 11.95h32m-32 12h32m-32 12h32"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+@if (isMenuOpen) {
+<div
+  open
+  class="fixed inset-0 bg-black/40 z-50 md:hidden"
+  (click)="closeMenu()"
+  (keydown.escape)="closeMenu()"
+  aria-label="Navigation menu"
+>
+  <div
+    class="bg-white w-72 h-full p-6 flex flex-col gap-6 transition-transform duration-300 overflow-y-auto"
+    (click)="$event.stopPropagation()"
+    (keydown.escape)="closeMenu()"
+  >
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="font-bold text-lg font-inter">Menu</h2>
+      <button (click)="closeMenu()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+          <g fill="currentColor" fill-rule="evenodd" clip-rule="evenodd">
+            <path
+              d="M5.47 5.47a.75.75 0 0 1 1.06 0l12 12a.75.75 0 1 1-1.06 1.06l-12-12a.75.75 0 0 1 0-1.06"
+            />
+            <path
+              d="M18.53 5.47a.75.75 0 0 1 0 1.06l-12 12a.75.75 0 0 1-1.06-1.06l12-12a.75.75 0 0 1 1.06 0"
+            />
+          </g>
+        </svg>
+      </button>
+    </div>
+
+    <!-- search  -->
+    <div class="relative">
+      <div class="flex items-center rounded-full px-4 py-2 outline outline-gray-300">
+        <input
+          type="text"
+          placeholder="Search here"
+          class="w-full outline-none bg-transparent font-inter"
+          [(ngModel)]="searchQuery"
+          (input)="onSearch()"
+          (keyup.enter)="goToSearch(); closeMenu()"
+          (blur)="closeSearch()"
+        />
+        <span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+            <path
+              fill="gray"
+              d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5A6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5S14 7.01 14 9.5S11.99 14 9.5 14"
+            />
+          </svg>
+        </span>
+      </div>
+
+      <!-- Mobile Search Dropdown -->
+      @if (isSearchOpen) {
+        <div class="absolute top-full mt-2 left-0 w-full bg-white rounded-2xl shadow-xl border z-50 max-h-60 overflow-y-auto scrollbar-hidden">
+          @for (product of searchResults; track product.id) {
+            <div (mousedown)="goToProduct(product); closeMenu()" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition">
+              <img [src]="product.image" [alt]="product.title" class="w-9 h-9 rounded-lg object-cover" />
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-medium font-inter truncate">{{ product.title }}</p>
+                <p class="text-xs text-gray-400 capitalize">{{ product.category }}</p>
+              </div>
+              <span class="text-sm font-semibold shrink-0">₹{{ product.price }}</span>
+            </div>
+          }
+          <!-- view all results -->
+          <div (mousedown)="goToSearch(); closeMenu()" class="flex items-center justify-between px-4 py-3 border-t border-gray-100 hover:bg-gray-50 cursor-pointer transition">
+            <span class="text-xs font-medium text-[#96a180]">View all {{ searchResults.length }} results</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" class="text-[#96a180]"><path fill="currentColor" d="M8.59 16.59L10 18l6-6l-6-6l-1.41 1.41L13.17 12z"/></svg>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- icons  -->
+    <div class="flex flex-col gap-4 border-b pb-4">
+      <button (click)="closeMenu()" routerLink="/wishlist" class="flex items-center gap-3 font-inter">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+          <path
+            fill="red"
+            d="M11.98 19.094q-.291 0-.577-.106q-.286-.105-.503-.323L9.752 17.63q-2.67-2.425-4.71-4.717Q3 10.622 3 8.15q0-1.908 1.296-3.204T7.5 3.65q1.094 0 2.279.553T12 6.289q1.037-1.533 2.221-2.086T16.5 3.65q1.908 0 3.204 1.296T21 8.15q0 2.529-2.125 4.862t-4.652 4.622l-1.142 1.031q-.218.218-.513.323t-.587.106m-.47-11.767q-.898-1.448-1.867-2.063Q8.675 4.65 7.5 4.65q-1.5 0-2.5 1t-1 2.5q0 1.108.627 2.272q.627 1.165 1.684 2.386q1.056 1.22 2.429 2.498q1.371 1.277 2.856 2.629q.173.154.404.154t.404-.154q1.485-1.352 2.857-2.63q1.372-1.276 2.429-2.497q1.056-1.222 1.683-2.386T20 8.15q0-1.5-1-2.5t-2.5-1q-1.175 0-2.144.615q-.97.614-1.867 2.062q-.08.135-.214.202T12 7.596t-.275-.067t-.213-.202M12 11.398"
+          />
+        </svg>
+        Favourite
+      </button>
+      <button (click)="closeMenu()" [routerLink]="authService.isLoggedIn() ? '/profile' : '/login'" class="flex items-center gap-3 font-inter">
+        @if (authService.isLoggedIn()) {
+          <div class="w-7 h-7 rounded-full bg-black text-white flex items-center justify-center text-xs font-semibold uppercase">
+            {{ authService.getUser()?.name?.charAt(0) || 'U' }}
+          </div>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1">
+              <path
+                stroke-linejoin="round"
+                d="M4 18a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"
+              />
+              <circle cx="12" cy="7" r="3" />
+            </g>
+          </svg>
+        }
+        {{ authService.isLoggedIn() ? 'Profile' : 'Login' }}
+      </button>
+      <button (click)="closeMenu()" routerLink="/cart" class="flex items-center gap-3 font-inter">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24">
+          <path
+            fill="currentColor"
+            d="M7.308 21.116q-.633 0-1.067-.434t-.433-1.066t.433-1.067q.434-.433 1.067-.433t1.066.433t.434 1.067t-.434 1.066t-1.066.434m9.384 0q-.632 0-1.066-.434t-.434-1.066t.434-1.067q.434-.433 1.066-.433t1.067.433q.433.434.433 1.067q0 .632-.433 1.066q-.434.434-1.067.434M5.881 5.5l2.669 5.616h6.635q.173 0 .307-.087q.135-.087.231-.24l2.616-4.75q.115-.212.019-.375q-.097-.164-.327-.164zm-.489-1h13.02q.651 0 .98.532q.33.531.035 1.095l-2.858 5.208q-.217.365-.564.573t-.763.208H8.1l-1.215 2.23q-.154.231-.01.5t.433.27h10.884v1H7.308q-.875 0-1.306-.738t-.021-1.482l1.504-2.68L3.808 3.5H2v-1h2.442zm3.158 6.616h7z"
+          />
+        </svg>
+        Cart
+      </button>
+    </div>
+
+    <nav class="flex flex-col gap-4 font-medium font-inter">
+      <!-- All Category dropdown -->
+      <div>
+        <button (click)="toggleCategory()" class="flex justify-between items-center w-full">
+          All Category
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            class="transition-transform duration-300"
+            [class.rotate-180]="isCategoryOpen"
+          >
+            <path
+              fill="currentColor"
+              d="m12 15l-4.243-4.242l1.415-1.414L12 12.172l2.828-2.828l1.415 1.414z"
+            />
+          </svg>
+        </button>
+
+        @if (isCategoryOpen) {
+          <div class="mt-3 bg-gray-50 rounded-2xl p-4">
+          <div class="grid grid-cols-2 gap-4">
+            <!-- MEN -->
+            <div>
+              <a [routerLink]="['/products', 'men']" [queryParams]="{}"><h4 class="font-semibold text-sm text-black mb-2 cursor-pointer">Men</h4></a>
+              <ul class="space-y-2 text-sm text-gray-500">
+                <li>
+                  <a [routerLink]="['/products', 'men', 't-shirts']" class="hover:text-black"
+                    >T-Shirts</a
+                  >
+                </li>
+                <li>
+                  <a [routerLink]="['/products', 'men', 'shoes']" class="hover:text-black">Shoes</a>
+                </li>
+                <li>
+                  <a [routerLink]="['/products', 'men', 'shorts']" class="hover:text-black"
+                    >Shorts</a
+                  >
+                </li>
+                <li>
+                  <a [routerLink]="['/products', 'men', 'jackets']" class="hover:text-black"
+                    >Jackets</a
+                  >
+                </li>
+                <li>
+                  <a [routerLink]="['/products', 'men', 'hats']" class="hover:text-black">Hats</a>
+                </li>
+                <li>
+                  <a [routerLink]="['/products', 'men', 'watches']" class="hover:text-black"
+                    >Watches</a
+                  >
+                </li>
+                <li>
+                  <a [routerLink]="['/products', 'men', 'accessories']" class="hover:text-black"
+                    >Accessories</a
+                  >
+                </li>
+              </ul>
+            </div>
+
+            <!-- WOMEN -->
+            <div>
+              <a [routerLink]="['/products', 'women']" [queryParams]="{}"><h4 class="font-semibold text-sm text-black mb-2 cursor-pointer">Women</h4></a>
+              <ul class="space-y-2 text-sm text-gray-500">
+                <li>
+                  <a [routerLink]="['/products', 'women', 'dresses']" class="hover:text-black"
+                    >Dresses</a
+                  >
+                </li>
+                <li>
+                  <a [routerLink]="['/products', 'women', 'heels']" class="hover:text-black"
+                    >Heels</a
+                  >
+                </li>
+                <li>
+                  <a [routerLink]="['/products', 'women', 'shoes']" class="hover:text-black"
+                    >Shoes</a
+                  >
+                </li>
+                <li>
+                  <a [routerLink]="['/products', 'women', 'bags']" class="hover:text-black">Bags</a>
+                </li>
+                <li>
+                  <a [routerLink]="['/products', 'women', 'jackets']" class="hover:text-black"
+                    >Jackets</a
+                  >
+                </li>
+                <li>
+                  <a [routerLink]="['/products', 'women', 't-shirts']" class="hover:text-black"
+                    >T-Shirts</a
+                  >
+                </li>
+                <li>
+                  <a [routerLink]="['/products', 'women', 'accessories']" class="hover:text-black"
+                    >Accessories</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Gift Cards accordion -->
+      <div>
+        <button (click)="toggleGiftCards()" class="flex justify-between items-center w-full">
+          <span class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="#e11d48" d="M20 12v-2h-1.42A3.49 3.49 0 0 0 19 8.5C19 6.57 17.43 5 15.5 5c-1.03 0-1.95.42-2.62 1.09L12 7l-.88-.91A3.48 3.48 0 0 0 8.5 5C6.57 5 5 6.57 5 8.5c0 .69.21 1.33.54 1.88L5 10.28V12H4v2h1v7h14v-7h1v-2zm-4.5-5c.83 0 1.5.67 1.5 1.5S16.33 10 15.5 10H13V9.5c0-.83.67-1.5 1.5-1.5zm-7 0c.83 0 1.5.67 1.5 1.5V10H8.5C7.67 10 7 9.33 7 8.5S7.67 7 8.5 7zM7 19v-7h5v7zm7 0v-7h3v7z"/></svg>
+            Gift Cards
+          </span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="transition-transform duration-300" [class.rotate-180]="isGiftCardsOpen">
+            <path fill="currentColor" d="m12 15l-4.243-4.242l1.415-1.414L12 12.172l2.828-2.828l1.415 1.414z"/>
+          </svg>
+        </button>
+        @if (isGiftCardsOpen) {
+          <div class="mt-3 bg-gray-50 rounded-2xl p-4 space-y-4">
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">By Occasion</p>
+              <ul class="grid grid-cols-2 gap-y-2 text-sm text-gray-600">
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">🎂 Birthday</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">💍 Anniversary</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">💒 Wedding</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">🎊 Festivals</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">🙏 Thank You</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">👫 Friendship</a></li>
+              </ul>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Card Type</p>
+              <ul class="grid grid-cols-2 gap-y-2 text-sm text-gray-600">
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">📧 E-Gift Card</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">📦 Physical Card</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">🏢 Corporate</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">👥 Bulk Orders</a></li>
+              </ul>
+            </div>
+            <div class="flex gap-4 pt-2 border-t border-gray-200 text-sm text-[#96a180] font-semibold">
+              <a href="#">💳 Check Balance</a>
+              <a href="#">🎁 Redeem</a>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Special Events accordion -->
+      <div>
+        <button (click)="toggleSpecialEvents()" class="flex justify-between items-center w-full">
+          <span class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="#f97316" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7m0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5"/></svg>
+            Special Events
+          </span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" class="transition-transform duration-300" [class.rotate-180]="isSpecialEventsOpen">
+            <path fill="currentColor" d="m12 15l-4.243-4.242l1.415-1.414L12 12.172l2.828-2.828l1.415 1.414z"/>
+          </svg>
+        </button>
+        @if (isSpecialEventsOpen) {
+          <div class="mt-3 bg-gray-50 rounded-2xl p-4 space-y-4">
+            <!-- mini sale banner -->
+            <div class="bg-linear-to-r from-orange-500 to-rose-500 rounded-xl p-3 text-white">
+              <p class="font-bold text-sm">🔥 Flash Sale — Up to 50% Off</p>
+              <p class="text-orange-100 text-xs mt-0.5">Limited time · Ends midnight</p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Active Sales</p>
+              <ul class="grid grid-cols-2 gap-y-2 text-sm text-gray-600">
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">🔥 Flash Sale</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">⚡ Weekend Deals</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">💯 Mega Sale</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">🏷️ Clearance</a></li>
+              </ul>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Collections</p>
+              <ul class="grid grid-cols-2 gap-y-2 text-sm text-gray-600">
+                <li><a [routerLink]="['/collections']" (click)="closeMenu()" class="flex items-center gap-1.5 hover:text-black">✨ New Arrivals</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">📈 Best Sellers</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">🔮 Trending Now</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">💎 Limited Edition</a></li>
+              </ul>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Festival Specials</p>
+              <ul class="grid grid-cols-2 gap-y-2 text-sm text-gray-600">
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">🪔 Diwali Special</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">☀️ Summer Edit</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">🎆 New Year Deals</a></li>
+                <li><a href="#" class="flex items-center gap-1.5 hover:text-black">💝 Valentine's</a></li>
+              </ul>
+            </div>
+          </div>
+        }
+      </div>
+    </nav>
+  </div>
+</div>
+}

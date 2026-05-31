@@ -1,0 +1,78 @@
+<section class="mt-6 px-6 lg:px-10 mx-auto max-w-360 pb-16">
+
+  <hr class="h-px bg-gray-200 border-0 mb-6">
+
+  <!-- Breadcrumb -->
+  <nav class="flex items-center gap-1.5 text-xs text-gray-500 uppercase tracking-wide mb-8">
+    <a routerLink="/" class="hover:text-black transition">Home</a>
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.59L10 18l6-6l-6-6l-1.41 1.41L13.17 12z"/></svg>
+    <span class="text-gray-600">Collections</span>
+  </nav>
+
+  <h1 class="text-3xl md:text-4xl font-semibold font-inter mb-2">All Collections</h1>
+  <p class="text-gray-500 mb-12">Explore our curated collections for every style and occasion.</p>
+
+  <!-- Men's Collections -->
+  @if (menCollections.length) {
+    <div class="mb-16">
+      <h2 class="text-2xl font-semibold font-inter mb-6">Men's Collections</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        @for (col of menCollections; track col.subcategory) {
+          <a [routerLink]="['/products', col.gender, col.subcategory]"
+             class="group relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square cursor-pointer">
+            <img [src]="col.image" [alt]="col.subcategory"
+                 class="w-full h-full object-cover transition duration-500 group-hover:scale-105" />
+            <div class="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent"></div>
+            <div class="absolute bottom-4 left-4 right-4">
+              <h3 class="text-white text-lg font-semibold capitalize">{{ col.subcategory }}</h3>
+              <p class="text-white/70 text-sm">{{ col.count }} {{ col.count === 1 ? 'item' : 'items' }}</p>
+            </div>
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Women's Collections -->
+  @if (womenCollections.length) {
+    <div class="mb-16">
+      <h2 class="text-2xl font-semibold font-inter mb-6">Women's Collections</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        @for (col of womenCollections; track col.subcategory) {
+          <a [routerLink]="['/products', col.gender, col.subcategory]"
+             class="group relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square cursor-pointer">
+            <img [src]="col.image" [alt]="col.subcategory"
+                 class="w-full h-full object-cover transition duration-500 group-hover:scale-105" />
+            <div class="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent"></div>
+            <div class="absolute bottom-4 left-4 right-4">
+              <h3 class="text-white text-lg font-semibold capitalize">{{ col.subcategory }}</h3>
+              <p class="text-white/70 text-sm">{{ col.count }} {{ col.count === 1 ? 'item' : 'items' }}</p>
+            </div>
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Kids Collections -->
+  @if (kidsCollections.length) {
+    <div>
+      <h2 class="text-2xl font-semibold font-inter mb-6">Kids Collections</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        @for (col of kidsCollections; track col.subcategory) {
+          <a [routerLink]="['/products', col.gender, col.subcategory]"
+             class="group relative rounded-2xl md:rounded-3xl overflow-hidden aspect-square cursor-pointer">
+            <img [src]="col.image" [alt]="col.subcategory"
+                 class="w-full h-full object-cover transition duration-500 group-hover:scale-105" />
+            <div class="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent"></div>
+            <div class="absolute bottom-4 left-4 right-4">
+              <h3 class="text-white text-lg font-semibold capitalize">{{ col.subcategory }}</h3>
+              <p class="text-white/70 text-sm">{{ col.count }} {{ col.count === 1 ? 'item' : 'items' }}</p>
+            </div>
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+</section>

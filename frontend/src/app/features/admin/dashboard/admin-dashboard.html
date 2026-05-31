@@ -1,0 +1,72 @@
+<div class="p-4 md:p-8">
+  <h1 class="text-xl md:text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
+
+  @if (loading) {
+    <div class="flex items-center justify-center h-48 text-gray-400">Loading...</div>
+  } @else if (error) {
+    <div class="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm">{{ error }}</div>
+  } @else {
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5 mb-8">
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+        <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Users</p>
+        <p class="text-3xl font-bold text-gray-900">{{ stats?.users ?? 0 }}</p>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+        <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Products</p>
+        <p class="text-3xl font-bold text-gray-900">{{ stats?.products ?? 0 }}</p>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+        <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Orders</p>
+        <p class="text-3xl font-bold text-gray-900">{{ stats?.orders ?? 0 }}</p>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+        <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Revenue</p>
+        <p class="text-3xl font-bold text-green-600">{{ stats?.revenue ?? 0 | currency:'INR':'symbol':'1.0-0' }}</p>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <h2 class="text-base font-semibold text-gray-800">Recent Orders</h2>
+        <a routerLink="/admin/orders" class="text-sm text-black underline underline-offset-4">View all</a>
+      </div>
+      @if (recentOrders.length === 0) {
+        <p class="px-6 py-8 text-sm text-gray-400 text-center">No orders yet.</p>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
+              <tr>
+                <th class="px-6 py-3 text-left">Order ID</th>
+                <th class="px-6 py-3 text-left">Customer</th>
+                <th class="px-6 py-3 text-left">Total</th>
+                <th class="px-6 py-3 text-left">Status</th>
+                <th class="px-6 py-3 text-left">Date</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              @for (order of recentOrders; track order._id) {
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-3 font-mono text-xs text-gray-500">{{ order._id | slice:0:10 }}…</td>
+                  <td class="px-6 py-3">
+                    <div class="font-medium text-gray-800">{{ order.user?.name || '—' }}</div>
+                    <div class="text-xs text-gray-400">{{ order.user?.email }}</div>
+                  </td>
+                  <td class="px-6 py-3 font-semibold">{{ order.totalAmount | currency:'INR':'symbol':'1.0-0' }}</td>
+                  <td class="px-6 py-3">
+                    <span [class]="'px-2 py-0.5 rounded-full text-xs font-medium ' + statusClass(order.status)">
+                      {{ order.status }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-3 text-gray-500 text-xs">{{ order.createdAt | date:'dd MMM y' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>

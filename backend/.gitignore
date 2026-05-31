@@ -1,0 +1,28 @@
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# Compiled output
+dist/
+build/
+
+# Dependencies
+node_modules/
+
+# Test coverage
+coverage/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Seed/migration artifacts
+users.json

@@ -1,0 +1,185 @@
+<section class="mt-6 px-6 lg:px-10 mx-auto max-w-360 pb-16">
+
+  <hr class="h-px bg-gray-200 border-0 mb-6">
+
+  @if (product) {
+  <!-- Breadcrumb -->
+  <nav class="flex items-center gap-1.5 text-xs text-gray-500 uppercase tracking-wide mb-8">
+    <a routerLink="/" class="hover:text-black transition">Home</a>
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.59L10 18l6-6l-6-6l-1.41 1.41L13.17 12z"/></svg>
+    <a [routerLink]="['/products', product.category]" class="hover:text-black transition capitalize">{{ product.category }}</a>
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.59L10 18l6-6l-6-6l-1.41 1.41L13.17 12z"/></svg>
+    <a [routerLink]="['/products', product.category, product.subcategory]" class="text-gray-600 capitalize hover:text-black transition">{{ product.subcategory }}</a>
+  </nav>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-16">
+
+    <!-- LEFT: Images -->
+    <div class="flex flex-col gap-4">
+      <!-- Main image -->
+      <div class="rounded-3xl overflow-hidden bg-gray-50 relative group aspect-square">
+        <img [src]="selectedImage" [alt]="product.title" class="w-full h-full object-cover transition duration-700 ease-out group-hover:scale-105" />
+      </div>
+
+      <!-- Thumbnails -->
+      <div class="flex gap-3">
+        @for (img of product.images; track img) {
+          <button
+            (click)="selectedImage = img"
+            [class]="'w-18 h-18 md:w-20 md:h-20 rounded-xl overflow-hidden border-2 transition cursor-pointer ' + (selectedImage === img ? 'border-black' : 'border-transparent hover:border-gray-300')"
+          >
+            <img [src]="img" [alt]="product.title" class="w-full h-full object-cover" />
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- RIGHT: Details -->
+    <div class="flex flex-col">
+
+      <!-- Title & Price -->
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">{{ product.subcategory }}</p>
+        <h1 class="text-3xl md:text-4xl font-semibold font-inter leading-tight">{{ product.title }}</h1>
+        <p class="text-2xl font-semibold mt-4">
+          <span class="text-gray-400 text-base line-through mr-2">₹{{ product.price + 100 }}</span>
+          ₹{{ product.price }}
+        </p>
+      </div>
+
+      <!-- Description -->
+      <p class="mt-6 text-gray-500 leading-relaxed">{{ product.description }}</p>
+
+      <hr class="border-gray-100 my-6">
+
+      <!-- Colors -->
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Colors</p>
+        <div class="flex gap-3">
+          @for (color of product.colors; track color) {
+            <span
+              class="w-8 h-8 rounded-full border-2 border-gray-200 hover:scale-110 transition cursor-pointer shadow-sm"
+              [style.backgroundColor]="getColorHex(color)"
+              [title]="color"
+            ></span>
+          }
+        </div>
+      </div>
+
+      <!-- Size -->
+      <div class="mt-6">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Size</p>
+        <div class="flex gap-2">
+          @for (size of ['S', 'M', 'L', 'XL']; track size) {
+            <button
+              (click)="selectSize(size)"
+              [class]="'w-12 h-12 rounded-xl text-sm font-medium cursor-pointer transition ' + (selectedSize === size ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')"
+            >
+              {{ size }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Quantity -->
+      <div class="mt-6">
+        <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Quantity</p>
+        @if (isOutOfStock) {
+          <span class="inline-flex items-center gap-1.5 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-full border border-red-200">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m1 15h-2v-2h2zm0-4h-2V7h2z"/></svg>
+            Out of Stock
+          </span>
+        } @else {
+          @if (lowStock !== null) {
+            <p class="text-orange-500 text-xs font-semibold mb-2">
+              ⚠ Only {{ lowStock }} left in stock!
+            </p>
+          }
+          <div class="flex items-center gap-1 bg-gray-100 rounded-xl w-fit p-1">
+            <button (click)="decrementQty()" class="w-10 h-10 flex items-center justify-center text-lg hover:bg-gray-200 rounded-lg transition cursor-pointer">−</button>
+            <span class="w-10 text-center text-sm font-semibold">{{ quantity }}</span>
+            <button
+              (click)="incrementQty()"
+              [disabled]="isAtMaxQty"
+              [class]="'w-10 h-10 flex items-center justify-center text-lg rounded-lg transition ' + (isAtMaxQty ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-200 cursor-pointer')"
+            >+</button>
+          </div>
+        }
+      </div>
+
+      <hr class="border-gray-100 my-6">
+
+      <!-- Action Buttons -->
+      <div class="flex gap-3">
+        <button
+          (click)="addToCart()"
+          [disabled]="isOutOfStock || addedToCart"
+          [class]="'flex-1 rounded-full py-3.5 text-sm font-semibold transition ' + (isOutOfStock ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : addedToCart ? 'bg-green-600 text-white cursor-pointer' : 'bg-black text-white hover:opacity-80 cursor-pointer')"
+        >
+          {{ isOutOfStock ? 'Out of Stock' : addedToCart ? '✓ Added to Cart' : 'Add To Cart' }}
+        </button>
+
+        <button
+          (click)="buyNow()"
+          [disabled]="isOutOfStock"
+          [class]="'flex-1 rounded-full py-3.5 text-sm font-semibold transition ' + (isOutOfStock ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-orange-500 text-white hover:bg-orange-600 cursor-pointer')"
+        >
+          {{ isOutOfStock ? 'Unavailable' : '⚡ Buy Now' }}
+        </button>
+
+        <!-- Wishlist -->
+        <button
+          (click)="toogleLike()"
+          [class]="'w-14 h-14 shrink-0 rounded-full flex items-center justify-center transition cursor-pointer ' + (isLiked ? 'bg-red-50' : 'bg-gray-100 hover:bg-gray-200')"
+        >
+          @if (isLiked) {
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+              <path fill="red" d="M12 20.325q-.35 0-.712-.125t-.638-.4l-1.725-1.575q-2.65-2.425-4.788-4.812T2 8.15Q2 5.8 3.575 4.225T7.5 2.65q1.325 0 2.5.562t2 1.538q.825-.975 2-1.537t2.5-.563q2.35 0 3.925 1.575T22 8.15q0 2.875-2.125 5.275T15.05 18.25l-1.7 1.55q-.275.275-.637.4t-.713.125"/>
+            </svg>
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M11.98 19.094q-.291 0-.577-.106q-.286-.105-.503-.323L9.752 17.63q-2.67-2.425-4.71-4.717Q3 10.622 3 8.15q0-1.908 1.296-3.204T7.5 3.65q1.094 0 2.279.553T12 6.289q1.037-1.533 2.221-2.086T16.5 3.65q1.908 0 3.204 1.296T21 8.15q0 2.529-2.125 4.862t-4.652 4.622l-1.142 1.031q-.218.218-.513.323t-.587.106m-.47-11.767q-.898-1.448-1.867-2.063Q8.675 4.65 7.5 4.65q-1.5 0-2.5 1t-1 2.5q0 1.108.627 2.272q.627 1.165 1.684 2.386q1.056 1.22 2.429 2.498q1.371 1.277 2.856 2.629q.173.154.404.154t.404-.154q1.485-1.352 2.857-2.63q1.372-1.276 2.429-2.497q1.056-1.222 1.683-2.386T20 8.15q0-1.5-1-2.5t-2.5-1q-1.175 0-2.144.615q-.97.614-1.867 2.062q-.08.135-.214.202T12 7.596t-.275-.067t-.213-.202M12 11.398"/>
+            </svg>
+          }
+        </button>
+      </div>
+
+      <!-- Trust badges -->
+      <div class="flex items-center gap-6 mt-8 text-xs text-gray-400">
+        <div class="flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M18 6h2v2h-2zm-6-4l9 4v6c0 5.55-3.84 10.74-9 12c-5.16-1.26-9-6.45-9-12V6zm0 2.18l-7 3.12V12c0 4.52 2.98 8.69 7 9.93c4.02-1.24 7-5.41 7-9.93V9.3z"/></svg>
+          Secure checkout
+        </div>
+        <div class="flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5s-.67 1.5-1.5 1.5m13.5-9l1.96 2.5H17V9.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5s-.67 1.5-1.5 1.5"/></svg>
+          Free shipping
+        </div>
+        <div class="flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m-2 15l-5-5l1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg>
+          30-day returns
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  <div class="mt-20">
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-2xl font-semibold font-inter">You May Also Like</h2>
+      <a [routerLink]="['/products', product.category, product.subcategory]" class="text-sm text-gray-400 hover:text-black transition">
+        View all →
+      </a>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+      @for (item of relatedProducts; track item.id) {
+        <app-product-card [product]="item"></app-product-card>
+      }
+    </div>
+  </div>
+
+  <!-- Reviews Section -->
+  <app-product-reviews [slug]="product.slug" [initialReviews]="reviews"></app-product-reviews>
+  } <!-- end @if (product) -->
+
+</section>

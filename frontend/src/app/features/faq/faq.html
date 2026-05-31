@@ -1,0 +1,38 @@
+<section class="min-h-[calc(100dvh-80px)] px-6 lg:px-10 py-10 max-w-240 mx-auto">
+
+  <hr class="h-px bg-gray-200 border-0 mb-8">
+
+  <div class="mb-10">
+    <p class="text-xs font-semibold uppercase tracking-widest text-[#96a180] mb-2">Help Centre</p>
+    <h1 class="text-3xl md:text-4xl font-semibold font-inter">Frequently Asked Questions</h1>
+    <p class="text-gray-500 mt-3 max-w-xl">Can't find an answer? Email us at <a href="mailto:support@nexora.com" class="underline hover:text-black">support&#64;nexora.com</a></p>
+  </div>
+
+  <div class="space-y-3">
+    @for (faq of faqs; track faq.question) {
+      <div class="border border-gray-200 rounded-2xl overflow-hidden">
+        <button
+          (click)="toggle(faq)"
+          class="w-full flex items-center justify-between px-6 py-5 text-left cursor-pointer hover:bg-gray-50 transition"
+        >
+          <span class="font-medium text-base pr-4">{{ faq.question }}</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20" height="20"
+            viewBox="0 0 24 24"
+            class="shrink-0 transition-transform duration-300"
+            [class.rotate-180]="faq.open"
+          >
+            <path fill="currentColor" d="M7 10l5 5l5-5z"/>
+          </svg>
+        </button>
+        @if (faq.open) {
+          <div class="px-6 pb-5 text-gray-500 text-sm leading-relaxed border-t border-gray-100 pt-4">
+            {{ faq.answer }}
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+</section>

@@ -1,0 +1,119 @@
+<div class="p-4 md:p-8">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-xl md:text-2xl font-bold text-gray-900">Orders</h1>
+    <span class="text-sm text-gray-500">{{ filtered.length }} of {{ orders.length }} orders</span>
+  </div>
+
+  <!-- Filters -->
+  <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 mb-4">
+    <input [(ngModel)]="search" (ngModelChange)="applyFilter()" type="text"
+           placeholder="Search by ID, customer name or email…"
+           class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black w-full sm:w-64"/>
+    <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilter()"
+            class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black">
+      <option value="">All Statuses</option>
+      @for (s of statuses; track s) {
+        <option [value]="s" class="capitalize">{{ s }}</option>
+      }
+    </select>
+  </div>
+
+  @if (error) {
+    <div class="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm mb-4">{{ error }}</div>
+  }
+
+  @if (loading) {
+    <div class="flex items-center justify-center h-48 text-gray-400">Loading orders…</div>
+  } @else {
+
+    <!-- Desktop table -->
+    <div class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
+            <tr>
+              <th class="px-4 py-3 text-left">Order ID</th>
+              <th class="px-4 py-3 text-left">Customer</th>
+              <th class="px-4 py-3 text-left">Items</th>
+              <th class="px-4 py-3 text-left">Total</th>
+              <th class="px-4 py-3 text-left">Payment</th>
+              <th class="px-4 py-3 text-left">Payment Status</th>
+              <th class="px-4 py-3 text-left">Order Status</th>
+              <th class="px-4 py-3 text-left">Date</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            @for (order of filtered; track order._id) {
+              <tr class="hover:bg-gray-50" [class.opacity-50]="updatingId === order._id">
+                <td class="px-4 py-3 font-mono text-xs text-gray-500">{{ order._id | slice:0:10 }}…</td>
+                <td class="px-4 py-3">
+                  <div class="font-medium text-gray-800">{{ order.user?.name || '—' }}</div>
+                  <div class="text-xs text-gray-400">{{ order.user?.email }}</div>
+                </td>
+                <td class="px-4 py-3 text-center text-gray-600">{{ order.items?.length || 0 }}</td>
+                <td class="px-4 py-3 font-semibold">{{ order.totalAmount | currency:'INR':'symbol':'1.0-0' }}</td>
+                <td class="px-4 py-3 text-gray-600 capitalize">{{ order.paymentMethod }}</td>
+                <td class="px-4 py-3">
+                  <span [class]="'px-2 py-0.5 rounded-full text-xs font-medium ' + paymentClass(order.paymentStatus)">
+                    {{ order.paymentStatus }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <select [ngModel]="order.status"
+                          (ngModelChange)="updateStatus(order, $event)"
+                          [disabled]="!!updatingId"
+                          [class]="'text-xs rounded-lg px-2 py-1 border focus:outline-none focus:ring-1 focus:ring-black ' + statusClass(order.status)">
+                    @for (s of statuses; track s) {
+                      <option [value]="s" class="bg-white text-gray-800">{{ s }}</option>
+                    }
+                  </select>
+                </td>
+                <td class="px-4 py-3 text-xs text-gray-500">{{ order.createdAt | date:'dd MMM y, h:mm a' }}</td>
+              </tr>
+            }
+            @empty {
+              <tr><td colspan="8" class="px-6 py-10 text-center text-gray-400">No orders found.</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Mobile cards -->
+    <div class="md:hidden space-y-3">
+      @for (order of filtered; track order._id) {
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4" [class.opacity-50]="updatingId === order._id">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <p class="font-mono text-xs text-gray-500">{{ order._id | slice:0:12 }}…</p>
+              <p class="font-medium text-gray-800 text-sm mt-0.5">{{ order.user?.name || '—' }}</p>
+              <p class="text-xs text-gray-400">{{ order.user?.email }}</p>
+            </div>
+            <p class="font-semibold text-sm">{{ order.totalAmount | currency:'INR':'symbol':'1.0-0' }}</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 text-xs mb-3">
+            <span class="text-gray-500">{{ order.items?.length || 0 }} item(s)</span>
+            <span class="text-gray-300">·</span>
+            <span class="capitalize text-gray-600">{{ order.paymentMethod }}</span>
+            <span [class]="'px-2 py-0.5 rounded-full font-medium ' + paymentClass(order.paymentStatus)">{{ order.paymentStatus }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <select [ngModel]="order.status"
+                    (ngModelChange)="updateStatus(order, $event)"
+                    [disabled]="!!updatingId"
+                    [class]="'text-xs rounded-lg px-2 py-1 border focus:outline-none focus:ring-1 focus:ring-black ' + statusClass(order.status)">
+              @for (s of statuses; track s) {
+                <option [value]="s" class="bg-white text-gray-800">{{ s }}</option>
+              }
+            </select>
+            <p class="text-xs text-gray-400">{{ order.createdAt | date:'dd MMM y' }}</p>
+          </div>
+        </div>
+      }
+      @if (filtered.length === 0) {
+        <p class="text-center text-gray-400 py-10">No orders found.</p>
+      }
+    </div>
+
+  }
+</div>

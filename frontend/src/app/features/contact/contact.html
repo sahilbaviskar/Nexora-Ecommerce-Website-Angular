@@ -1,0 +1,132 @@
+<section class="min-h-[calc(100dvh-80px)] px-6 lg:px-10 py-10 max-w-320 mx-auto">
+
+  <hr class="h-px bg-gray-200 border-0 mb-8">
+
+  <div class="mb-10">
+    <p class="text-xs font-semibold uppercase tracking-widest text-[#96a180] mb-2">Get In Touch</p>
+    <h1 class="text-3xl md:text-4xl font-semibold font-inter">Contact Us</h1>
+    <p class="text-gray-500 mt-3">We typically respond within 2 hours on business days.</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+    <!-- contact form -->
+    <div>
+      @if (submitted) {
+        <div class="flex flex-col items-center justify-center py-16 text-center">
+          <div class="w-16 h-16 rounded-full bg-[#96a180]/15 text-[#96a180] flex items-center justify-center mb-5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m-2 15l-5-5l1.41-1.41L10 14.17l7.59-7.59L19 8z"/></svg>
+          </div>
+          <h2 class="text-xl font-semibold font-inter mb-2">Message Sent!</h2>
+          <p class="text-gray-500 text-sm">Thank you for reaching out. We will get back to you shortly.</p>
+          <button (click)="submitted = false" class="mt-6 px-6 py-2 border rounded-full text-sm hover:bg-black hover:text-white transition cursor-pointer">
+            Send Another Message
+          </button>
+        </div>
+      }
+
+      @if (!submitted) {
+        <form (ngSubmit)="send()" class="space-y-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block text-sm font-medium mb-1.5">Full Name <span class="text-red-500">*</span></label>
+              <input
+                type="text"
+                [(ngModel)]="form.name"
+                name="name"
+                placeholder="Your name"
+                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition"
+                required
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1.5">Email <span class="text-red-500">*</span></label>
+              <input
+                type="email"
+                [(ngModel)]="form.email"
+                name="email"
+                placeholder="you@email.com"
+                class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition"
+                required
+              />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5">Subject</label>
+            <input
+              type="text"
+              [(ngModel)]="form.subject"
+              name="subject"
+              placeholder="How can we help?"
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1.5">Message <span class="text-red-500">*</span></label>
+            <textarea
+              [(ngModel)]="form.message"
+              name="message"
+              rows="5"
+              placeholder="Describe your issue or question..."
+              class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm outline-none focus:border-black transition resize-none"
+              required
+            ></textarea>
+          </div>
+          <button
+            type="submit"
+            [disabled]="sending"
+            class="w-full py-3 bg-black text-white rounded-full text-sm font-medium hover:opacity-80 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          >
+            {{ sending ? 'Sending...' : 'Send Message' }}
+          </button>
+        </form>
+      }
+    </div>
+
+    <!-- contact info -->
+    <div class="space-y-6">
+      <div class="border border-gray-200 rounded-2xl p-6 flex gap-4">
+        <div class="w-10 h-10 rounded-xl bg-[#96a180]/15 text-[#96a180] flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"/></svg>
+        </div>
+        <div>
+          <p class="text-sm font-semibold mb-1">Email Us</p>
+          <a href="mailto:support@nexora.com" class="text-sm text-gray-500 hover:text-black transition">support&#64;nexora.com</a>
+          <p class="text-xs text-gray-400 mt-0.5">We reply within 2 hours</p>
+        </div>
+      </div>
+      <div class="border border-gray-200 rounded-2xl p-6 flex gap-4">
+        <div class="w-10 h-10 rounded-xl bg-[#96a180]/15 text-[#96a180] flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24c1.12.37 2.33.57 3.57.57c.55 0 1 .45 1 1V20c0 .55-.45 1-1 1c-9.39 0-17-7.61-17-17c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1c0 1.25.2 2.45.57 3.57c.11.35.03.74-.25 1.02z"/></svg>
+        </div>
+        <div>
+          <p class="text-sm font-semibold mb-1">Call Us</p>
+          <p class="text-sm text-gray-500">1800-XXX-XXXX (Toll Free)</p>
+          <p class="text-xs text-gray-400 mt-0.5">Mon–Sat, 9am – 6pm IST</p>
+        </div>
+      </div>
+      <div class="border border-gray-200 rounded-2xl p-6 flex gap-4">
+        <div class="w-10 h-10 rounded-xl bg-[#96a180]/15 text-[#96a180] flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7m0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5s-1.12 2.5-2.5 2.5z"/></svg>
+        </div>
+        <div>
+          <p class="text-sm font-semibold mb-1">Visit Us</p>
+          <p class="text-sm text-gray-500">123 Fashion Street, Bandra West</p>
+          <p class="text-sm text-gray-500">Mumbai, Maharashtra 400050</p>
+        </div>
+      </div>
+      <div class="border border-gray-200 rounded-2xl p-6 flex gap-4">
+        <div class="w-10 h-10 rounded-xl bg-[#96a180]/15 text-[#96a180] flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        </div>
+        <div>
+          <p class="text-sm font-semibold mb-1">Live Chat</p>
+          <p class="text-sm text-gray-500">Available on the bottom-right corner</p>
+          <p class="text-xs text-gray-400 mt-0.5">Average wait: under 5 minutes</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</section>

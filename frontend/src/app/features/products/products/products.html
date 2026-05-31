@@ -1,0 +1,346 @@
+<section class="px-6 lg:px-10 mt-6 max-w-360 mx-auto">
+ 
+  <hr class="h-px my-6 bg-gray-400/50 border-0">
+  <!-- Breadcrumb -->
+  <nav class="flex items-center gap-1.5 text-xs text-gray-500 uppercase tracking-wide mb-8">
+    <a routerLink="/" class="hover:text-black transition">Home</a>
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.59L10 18l6-6l-6-6l-1.41 1.41L13.17 12z"/></svg>
+    <a [routerLink]="['/products', gender]" class="hover:text-black transition capitalize">{{ gender }}</a>
+
+    @if (category) {
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.59L10 18l6-6l-6-6l-1.41 1.41L13.17 12z"/></svg>
+      <a [routerLink]="['/products', gender, category]" class="text-gray-600 capitalize hover:text-black transition">{{ category }}</a>
+    }
+  </nav>
+
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-4">
+    <div>
+      <h1 class="text-3xl md:text-4xl font-semibold capitalize">{{ gender }} {{ category }}</h1>
+      <p class="text-sm text-gray-500 mt-1">Showing {{ products.length }} products</p>
+    </div>
+
+    <!-- Sort & Mobile Filter -->
+    <div class="flex items-center gap-3">
+      <button
+        (click)="showMobileFilters = true"
+        class="lg:hidden flex items-center gap-2 border border-gray-200 bg-white shadow-sm rounded-full px-4 py-2 text-sm cursor-pointer hover:bg-gray-50 transition"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M10 18h4v-2h-4zM3 6v2h18V6zm3 7h12v-2H6z"/></svg>
+        Filters
+      </button>
+
+      <label for="sort-select" class="sr-only">Sort products</label>
+      <div class="relative">
+        <button
+          (click)="showSortDropdown = !showSortDropdown"
+          class="flex items-center gap-2 border border-gray-200 bg-white shadow-sm rounded-full pl-4 pr-3.5 py-2.5 text-sm font-medium min-w-48 cursor-pointer hover:border-gray-400 focus:outline-none focus:border-black transition"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" class="text-gray-400">
+            <path fill="currentColor" d="M3 18h6v-2H3zm0-5v2h12v-2zm0-7v2h18V6z"/>
+          </svg>
+          <span class="flex-1 text-left">{{ sortOption === 'featured' ? 'Featured' : sortOption === 'low-high' ? 'Price: Low → High' : 'Price: High → Low' }}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" class="text-gray-400 transition" [class.rotate-180]="showSortDropdown">
+            <path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6l-6-6z"/>
+          </svg>
+        </button>
+
+        @if (showSortDropdown) {
+          <div class="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-100 rounded-2xl shadow-lg overflow-hidden z-50">
+            <button
+              (click)="sortOption = 'featured'; sortProducts(); showSortDropdown = false"
+              [class]="'w-full text-left px-4 py-3 text-sm transition cursor-pointer flex items-center justify-between ' + (sortOption === 'featured' ? 'bg-gray-50 font-semibold' : 'hover:bg-gray-50')"
+            >
+              Featured
+              @if (sortOption === 'featured') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19L21 7l-1.41-1.41z"/></svg>
+              }
+            </button>
+            <button
+              (click)="sortOption = 'low-high'; sortProducts(); showSortDropdown = false"
+              [class]="'w-full text-left px-4 py-3 text-sm transition cursor-pointer flex items-center justify-between ' + (sortOption === 'low-high' ? 'bg-gray-50 font-semibold' : 'hover:bg-gray-50')"
+            >
+              Price: Low → High
+              @if (sortOption === 'low-high') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19L21 7l-1.41-1.41z"/></svg>
+              }
+            </button>
+            <button
+              (click)="sortOption = 'high-low'; sortProducts(); showSortDropdown = false"
+              [class]="'w-full text-left px-4 py-3 text-sm transition cursor-pointer flex items-center justify-between ' + (sortOption === 'high-low' ? 'bg-gray-50 font-semibold' : 'hover:bg-gray-50')"
+            >
+              Price: High → Low
+              @if (sortOption === 'high-low') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19L21 7l-1.41-1.41z"/></svg>
+              }
+            </button>
+          </div>
+          <!-- Backdrop to close -->
+          <div class="fixed inset-0 z-40" (click)="showSortDropdown = false"></div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Filter Overlay -->
+  @if (showMobileFilters) {
+    <div class="fixed inset-0 z-50 lg:hidden">
+      <!-- Backdrop -->
+      <div class="absolute inset-0 bg-black/40" (click)="showMobileFilters = false"></div>
+
+      <!-- Panel -->
+      <div class="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl overflow-y-auto animate-slide-in-right">
+        <div class="p-6 space-y-6">
+
+          <!-- Header -->
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold text-lg font-inter">Filters</h3>
+            <button (click)="showMobileFilters = false" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"/></svg>
+            </button>
+          </div>
+
+          <hr class="border-gray-200">
+
+          <!-- Category -->
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Category</p>
+            <div class="space-y-2.5">
+              @for (cat of categories; track cat) {
+                <label class="flex items-center gap-3 cursor-pointer group">
+                  <div
+                    [class]="'w-5 h-5 rounded-md border-2 flex items-center justify-center transition ' + (tempCategories.includes(cat) ? 'bg-black border-black' : 'border-gray-300 group-hover:border-gray-500')"
+                  >
+                    @if (tempCategories.includes(cat)) {
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
+                        <path fill="white" d="M9 16.17L4.83 12l-1.42 1.41L9 19L21 7l-1.41-1.41z"/>
+                      </svg>
+                    }
+                  </div>
+                  <input type="checkbox" class="hidden" [checked]="tempCategories.includes(cat)" (change)="toggleCategory(cat)" />
+                  <span class="text-sm text-gray-600 capitalize group-hover:text-black transition">{{ cat }}</span>
+                </label>
+              }
+            </div>
+          </div>
+
+          <hr class="border-gray-200">
+
+          <!-- Colors -->
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Colors</p>
+            <div class="flex flex-wrap gap-2.5">
+              @for (color of colors; track color) {
+                <button
+                  (click)="toggleColor(color)"
+                  [title]="color"
+                  class="relative w-8 h-8 rounded-full border-2 cursor-pointer transition-all hover:scale-110"
+                  [class.border-black]="tempColors.includes(color)"
+                  [class.border-transparent]="!tempColors.includes(color)"
+                  [class.shadow-md]="tempColors.includes(color)"
+                  [style.background]="getColorHex(color)"
+                >
+                  @if (tempColors.includes(color)) {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                      class="absolute inset-0 m-auto"
+                      [style.color]="color === 'white' || color === 'beige' || color === 'cream' || color === 'yellow' ? 'black' : 'white'"
+                    >
+                      <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19L21 7l-1.41-1.41z"/>
+                    </svg>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+
+          <hr class="border-gray-200">
+
+          <!-- Tags -->
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Tags</p>
+            <div class="flex flex-wrap gap-2">
+              @for (tag of tags; track tag) {
+                <button
+                  (click)="toggleTag(tag)"
+                  [class]="'px-4 py-1.5 rounded-full text-xs font-medium transition cursor-pointer ' + (tempTags.includes(tag) ? 'bg-black text-white shadow-sm' : 'bg-gray-100 border border-gray-200 text-gray-500 hover:border-black hover:text-black')"
+                >
+                  {{ tag }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <hr class="border-gray-200">
+
+          <!-- Actions -->
+          <div class="flex gap-3">
+            <button
+              (click)="clearFilters(); showMobileFilters = false"
+              class="flex-1 border border-gray-200 rounded-full py-3 text-sm font-medium hover:bg-gray-50 transition cursor-pointer"
+            >
+              Reset
+            </button>
+            <button
+              (click)="applyFilters(); showMobileFilters = false"
+              class="flex-1 bg-black text-white rounded-full py-3 text-sm font-medium hover:opacity-80 transition cursor-pointer"
+            >
+              Apply
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 mt-10">
+    <!-- FILTERS -->
+    <aside class="hidden lg:block lg:col-span-3">
+      <div class="bg-gray-50 rounded-3xl p-6 space-y-6 sticky top-6">
+
+        <!-- header -->
+        <div class="flex items-center justify-between">
+          <h3 class="font-semibold text-lg font-inter">Filters</h3>
+          <button
+            (click)="clearFilters()"
+            class="text-xs text-gray-400 hover:text-black transition cursor-pointer"
+          >
+            Reset all
+          </button>
+        </div>
+
+        <hr class="border-gray-200">
+
+        <!-- Category -->
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Category</p>
+          <div class="space-y-2.5">
+            @for (cat of categories; track cat) {
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <div
+                  [class]="'w-5 h-5 rounded-md border-2 flex items-center justify-center transition ' + (tempCategories.includes(cat) ? 'bg-black border-black' : 'border-gray-300 group-hover:border-gray-500')"
+                >
+                  @if (tempCategories.includes(cat)) {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
+                      <path fill="white" d="M9 16.17L4.83 12l-1.42 1.41L9 19L21 7l-1.41-1.41z"/>
+                    </svg>
+                  }
+                </div>
+                <input
+                  type="checkbox"
+                  class="hidden"
+                  [checked]="tempCategories.includes(cat)"
+                  (change)="toggleCategory(cat)"
+                />
+                <span class="text-sm text-gray-600 capitalize group-hover:text-black transition">{{ cat }}</span>
+              </label>
+            }
+          </div>
+        </div>
+
+        <hr class="border-gray-200">
+
+        <!-- Colors -->
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Colors</p>
+          <div class="flex flex-wrap gap-2.5">
+            @for (color of colors; track color) {
+              <button
+                (click)="toggleColor(color)"
+                [title]="color"
+                class="relative w-8 h-8 rounded-full border-2 cursor-pointer transition-all hover:scale-110"
+                [class.border-black]="tempColors.includes(color)"
+                [class.border-transparent]="!tempColors.includes(color)"
+                [class.shadow-md]="tempColors.includes(color)"
+                [style.background]="getColorHex(color)"
+              >
+                @if (tempColors.includes(color)) {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                    class="absolute inset-0 m-auto"
+                    [style.color]="color === 'white' || color === 'beige' || color === 'cream' || color === 'yellow' ? 'black' : 'white'"
+                  >
+                    <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19L21 7l-1.41-1.41z"/>
+                  </svg>
+                }
+              </button>
+            }
+          </div>
+        </div>
+
+        <hr class="border-gray-200">
+
+        <!-- Tags -->
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">Tags</p>
+          <div class="flex flex-wrap gap-2">
+            @for (tag of tags; track tag) {
+              <button
+                (click)="toggleTag(tag)"
+                [class]="'px-4 py-1.5 rounded-full text-xs font-medium transition cursor-pointer ' + (tempTags.includes(tag) ? 'bg-black text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-500 hover:border-black hover:text-black')"
+              >
+                {{ tag }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <hr class="border-gray-200">
+
+        <!-- Apply button -->
+        <button
+          (click)="applyFilters()"
+          class="w-full bg-black text-white rounded-full py-3 text-sm font-medium hover:opacity-80 transition cursor-pointer"
+        >
+          Apply Filters
+        </button>
+
+      </div>
+    </aside>
+
+    <!-- PRODUCTS -->
+    <div class="lg:col-span-9">
+      <!-- GRID -->
+      <div class="grid grid-cols-2 md:grid-cols-3  gap-6">
+        @for (product of paginatedProducts; track product.id) {
+          <app-product-card [product]="product"></app-product-card>
+        }
+      </div>
+
+      <!-- PAGINATION -->
+      <div class="flex justify-center items-center gap-2 mt-14">
+        <!-- Prev -->
+        <button
+          (click)="prevPage()"
+          [disabled]="currentPage === 1"
+          class="w-10 h-10 rounded-full flex items-center justify-center transition cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed bg-gray-100 hover:bg-black hover:text-white"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M15.41 7.41L14 6l-6 6l6 6l1.41-1.41L10.83 12z"/>
+          </svg>
+        </button>
+
+        <!-- Pages -->
+        @for (page of totalPagesArray; track page) {
+          <button
+            (click)="goToPage(page)"
+            [class]="'w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition cursor-pointer ' + (page === currentPage ? 'bg-black text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200')"
+          >
+            {{ page }}
+          </button>
+        }
+
+        <!-- Next -->
+        <button
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages"
+          class="w-10 h-10 rounded-full flex items-center justify-center transition cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed bg-gray-100 hover:bg-black hover:text-white"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M8.59 16.59L10 18l6-6l-6-6l-1.41 1.41L13.17 12z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

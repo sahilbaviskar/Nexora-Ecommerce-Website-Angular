@@ -1,0 +1,125 @@
+<section class="min-h-[calc(100dvh-80px)] px-6 lg:px-10 py-8">
+
+  <hr class="h-px bg-gray-200 border-0 mb-6">
+
+  <!-- breadcrumb -->
+  <nav class="flex items-center gap-1.5 text-xs text-gray-500 uppercase tracking-wide mb-8">
+    <a routerLink="/" class="hover:text-black transition">Home</a>
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.59L10 18l6-6l-6-6l-1.41 1.41L13.17 12z"/></svg>
+    <span class="text-gray-600">Cart</span>
+  </nav>
+
+  <h1 class="text-2xl md:text-3xl font-semibold font-inter">Shopping Cart</h1>
+  <p class="text-gray-500 text-sm mt-1">{{ items.length }} item{{ items.length !== 1 ? 's' : '' }}</p>
+
+  <!-- empty state -->
+  @if (items.length === 0) {
+    <div class="flex flex-col items-center justify-center py-20 text-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" class="text-gray-300">
+        <path fill="currentColor" d="M7.308 21.116q-.633 0-1.067-.434t-.433-1.066t.433-1.067q.434-.433 1.067-.433t1.066.433t.434 1.067t-.434 1.066t-1.066.434m9.384 0q-.632 0-1.066-.434t-.434-1.066t.434-1.067q.434-.433 1.066-.433t1.067.433q.433.434.433 1.067q0 .632-.433 1.066q-.434.434-1.067.434M5.881 5.5l2.669 5.616h6.635q.173 0 .307-.087q.135-.087.231-.24l2.616-4.75q.115-.212.019-.375q-.097-.164-.327-.164zm-.489-1h13.02q.651 0 .98.532q.33.531.035 1.095l-2.858 5.208q-.217.365-.564.573t-.763.208H8.1l-1.215 2.23q-.154.231-.01.5t.433.27h10.884v1H7.308q-.875 0-1.306-.738t-.021-1.482l1.504-2.68L3.808 3.5H2v-1h2.442zm3.158 6.616h7z"/>
+      </svg>
+      <h3 class="mt-4 text-lg font-semibold font-inter">Your cart is empty</h3>
+      <p class="mt-2 text-gray-500 text-sm">Looks like you haven't added anything yet.</p>
+      <a routerLink="/products/men" class="mt-6 bg-black text-white rounded-full px-6 py-2.5 text-sm font-medium hover:opacity-70 transition">
+        Start Shopping
+      </a>
+    </div>
+  }
+
+  <!-- cart content -->
+  @if (items.length > 0) {
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+
+      <!-- items list -->
+      <div class="lg:col-span-2 flex flex-col gap-4">
+        @for (item of items; track item.product.id + item.size) {
+          <div class="flex gap-4 md:gap-6 bg-gray-50 rounded-2xl p-4 md:p-5">
+            <!-- image -->
+            <a [routerLink]="['/product', item.product.slug]" class="shrink-0">
+              <img
+                [src]="item.product.image"
+                [alt]="item.product.title"
+                class="w-24 h-24 md:w-32 md:h-32 object-cover rounded-xl"
+              />
+            </a>
+
+            <!-- details -->
+            <div class="flex-1 flex flex-col justify-between min-w-0">
+              <div>
+                <a [routerLink]="['/product', item.product.slug]" class="font-medium font-inter text-sm md:text-base hover:underline">
+                  {{ item.product.title }}
+                </a>
+                <p class="text-gray-400 text-xs md:text-sm capitalize mt-0.5">{{ item.product.category }} · {{ item.product.subcategory }}</p>
+                <p class="text-gray-500 text-xs md:text-sm mt-1">Size: {{ item.size }}</p>
+              </div>
+
+              <div class="flex items-center justify-between mt-3">
+                <!-- quantity -->
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-2 border rounded-full px-2 py-1">
+                    <button (click)="decrement(item)" class="w-7 h-7 flex items-center justify-center text-lg hover:bg-gray-200 rounded-full transition cursor-pointer">−</button>
+                    <span class="w-6 text-center text-sm font-medium">{{ item.quantity }}</span>
+                    <button
+                      (click)="increment(item)"
+                      [disabled]="item.product.stock !== undefined && item.quantity >= item.product.stock"
+                      [class]="'w-7 h-7 flex items-center justify-center text-lg rounded-full transition ' + (item.product.stock !== undefined && item.quantity >= item.product.stock ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-200 cursor-pointer')"
+                    >+</button>
+                  </div>
+                  @if (item.product.stock !== undefined && item.product.stock > 0 && item.product.stock <= 3) {
+                    <span class="text-orange-500 text-[10px] font-semibold text-center">Only {{ item.product.stock }} left</span>
+                  }
+                  @if (item.product.stock === 0) {
+                    <span class="text-red-500 text-[10px] font-semibold text-center">Out of stock</span>
+                  }
+                </div>
+
+                <!-- price -->
+                <p class="font-semibold text-sm md:text-base">₹{{ item.product.price * item.quantity }}</p>
+              </div>
+            </div>
+
+            <!-- remove -->
+            <button (click)="remove(item)" class="self-start text-gray-400 hover:text-red-500 transition cursor-pointer" aria-label="Remove item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z"/>
+              </svg>
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- order summary -->
+      <div class="lg:col-span-1">
+        <div class="bg-gray-50 rounded-2xl p-6 sticky top-8">
+          <h3 class="text-lg font-semibold font-inter">Order Summary</h3>
+
+          <div class="mt-6 space-y-3 text-sm">
+            <div class="flex justify-between">
+              <span class="text-gray-500">Subtotal</span>
+              <span class="font-medium">₹{{ total }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-500">Shipping</span>
+              <span class="font-medium text-green-600">Free</span>
+            </div>
+            <hr class="border-gray-200">
+            <div class="flex justify-between text-base font-semibold">
+              <span>Total</span>
+              <span>₹{{ total }}</span>
+            </div>
+          </div>
+
+          <a routerLink="/checkout"><button class="w-full mt-6 bg-black text-white rounded-full py-3 font-medium hover:opacity-70 transition cursor-pointer">
+            Checkout
+          </button></a>
+
+          <a routerLink="/collections" class="block text-center mt-3 text-sm text-gray-500 hover:text-black transition">
+            Continue Shopping
+          </a>
+        </div>
+      </div>
+
+    </div>
+  }
+
+</section>

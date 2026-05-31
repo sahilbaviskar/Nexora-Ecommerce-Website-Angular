@@ -1,0 +1,26 @@
+<div class="fixed top-5 right-4 z-9999 flex flex-col gap-2 w-[calc(100vw-2rem)] max-w-sm pointer-events-none">
+  @for (toast of toastService.toasts(); track trackById($index, toast)) {
+    <div
+      [class]="'pointer-events-auto flex items-center gap-3 px-3 py-3 rounded-xl shadow-lg text-sm font-medium animate-slide-in ' + colors(toast.type)"
+    >
+      @if (toast.image) {
+        <img [src]="toast.image" alt="" class="w-11 h-11 rounded-lg object-cover shrink-0" />
+      } @else {
+        <span [class]="'shrink-0 ' + iconColor(toast.type)" [innerHTML]="icon(toast.type)"></span>
+      }
+      <span class="flex-1 leading-snug">{{ toast.message }}</span>
+      @if (toast.image) {
+        <span [class]="'shrink-0 ' + iconColor(toast.type)" [innerHTML]="icon(toast.type)"></span>
+      }
+      <button
+        (click)="toastService.dismiss(toast.id)"
+        class="shrink-0 text-gray-400 hover:text-gray-700 transition cursor-pointer"
+        aria-label="Dismiss"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+    </div>
+  }
+</div>

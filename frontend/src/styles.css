@@ -1,0 +1,63 @@
+/* global styles */
+
+/* 1. external imports first */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+/* 2. tailwind import */
+@import "tailwindcss";
+
+/* Tailwind custom utilities */
+@layer utilities {
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+  }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* responsive rules */
+@media (max-width: 420px) {
+  .large-card .card-image {
+    height: 200px !important;
+    aspect-ratio: auto !important;
+  }
+}
+
+@media (min-width: 421px) and (max-width: 640px) {
+  .large-card .card-image {
+    height: 230px !important;
+    aspect-ratio: auto !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 767px) {
+  .large-card .card-image {
+    height: 300px !important;
+    aspect-ratio: auto !important;
+  }
+}
+
+.font-inter {
+  font-family: 'Inter', sans-serif;
+}

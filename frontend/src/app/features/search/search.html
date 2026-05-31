@@ -1,0 +1,82 @@
+<section class="min-h-[calc(100dvh-80px)] px-6 lg:px-10 py-10 max-w-380 mx-auto">
+
+  <hr class="h-px bg-gray-200 border-0 mb-8">
+
+  <!-- header -->
+  <div class="mb-8">
+    @if (query.length >= 2) {
+      <p class="text-xs font-semibold uppercase tracking-widest text-[#96a180] mb-2">Search Results</p>
+      <h1 class="text-2xl md:text-3xl font-semibold font-inter">
+        @if (!loading) {
+          <span>{{ filtered.length }} result{{ filtered.length !== 1 ? 's' : '' }} for</span>
+        }
+        <span class="italic font-normal"> "{{ query }}"</span>
+      </h1>
+    } @else {
+      <h1 class="text-2xl md:text-3xl font-semibold font-inter">What are you looking for?</h1>
+      <p class="text-gray-500 mt-2 text-sm">Type at least 2 characters in the search bar above.</p>
+    }
+  </div>
+
+  <!-- category filter tabs -->
+  @if (!loading && results.length > 0) {
+    <div class="flex flex-wrap gap-2 mb-8">
+      @for (cat of categories; track cat) {
+        <button
+          (click)="selectCategory(cat)"
+          [class]="'px-4 py-1.5 rounded-full text-sm font-medium border transition cursor-pointer capitalize ' + (activeCategory === cat ? 'bg-black text-white border-black' : 'border-gray-300 text-gray-600 hover:border-black hover:text-black')"
+        >{{ cat }}</button>
+      }
+    </div>
+  }
+
+  <!-- loading skeletons -->
+  @if (loading) {
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+      @for (s of [1,2,3,4,5,6,7,8,9,10]; track s) {
+        <div class="animate-pulse">
+          <div class="rounded-2xl bg-gray-200 aspect-[3/4] mb-3"></div>
+          <div class="h-3 bg-gray-200 rounded w-3/4 mb-2"></div>
+          <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- results grid -->
+  @if (!loading && filtered.length > 0) {
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+      @for (product of filtered; track product.slug) {
+        <app-product-card [product]="product" />
+      }
+    </div>
+  }
+
+  <!-- no results -->
+  @if (!loading && query.length >= 2 && results.length === 0) {
+    <div class="flex flex-col items-center justify-center py-24 text-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" class="text-gray-300 mb-5">
+        <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5A6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5S14 7.01 14 9.5S11.99 14 9.5 14"/>
+      </svg>
+      <h2 class="text-xl font-semibold font-inter mb-2">No results for "{{ query }}"</h2>
+      <p class="text-gray-500 text-sm mb-6 max-w-sm">Try a different keyword, check for typos, or browse our categories below.</p>
+      <div class="flex flex-wrap gap-3 justify-center">
+        <a [routerLink]="['/products', 'men']" class="px-5 py-2 border rounded-full text-sm hover:bg-black hover:text-white transition">Men</a>
+        <a [routerLink]="['/products', 'women']" class="px-5 py-2 border rounded-full text-sm hover:bg-black hover:text-white transition">Women</a>
+        <a [routerLink]="['/products', 'kids']" class="px-5 py-2 border rounded-full text-sm hover:bg-black hover:text-white transition">Kids</a>
+        <a routerLink="/collections" class="px-5 py-2 border rounded-full text-sm hover:bg-black hover:text-white transition">Collections</a>
+      </div>
+    </div>
+  }
+
+  <!-- no-query empty state -->
+  @if (!loading && query.length < 2) {
+    <div class="flex flex-col items-center justify-center py-20 text-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" class="text-gray-200 mb-5">
+        <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5A6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5S14 7.01 14 9.5S11.99 14 9.5 14"/>
+      </svg>
+      <p class="text-gray-400 text-sm">Your search results will appear here.</p>
+    </div>
+  }
+
+</section>

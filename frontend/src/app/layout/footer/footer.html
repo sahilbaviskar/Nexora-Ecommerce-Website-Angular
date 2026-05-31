@@ -1,0 +1,117 @@
+<footer class="px-6 lg:px-10 mt-16 bg-black text-white py-10">
+  <div class="flex flex-col lg:flex-row gap-10 justify-between">
+    <!-- left -->
+    <div class="lg:w-[35%]">
+      <h2 class="text-xl md:text-2xl font-bold font-inter">NEXORA</h2>
+
+      <p class="mt-4 text-sm text-gray-400 md:text-base max-w-xl">
+        Nexora is a free UI Kit from Paperpillar that you can use for your personal or commercial
+        project.
+      </p>
+
+      <!-- subscribe  -->
+      <div class="mt-6">
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input
+            type="email"
+            placeholder="Type your email address"
+            [(ngModel)]="subscribeEmail"
+            class="flex-1 py-3 px-5 rounded-full bg-transparent border border-gray-400 text-sm outline-none text-white"
+          />
+          <button
+            (click)="subscribe()"
+            class="w-35 px-6 py-3 rounded-full bg-white text-black text-sm font-medium cursor-pointer hover:bg-gray-200"
+          >
+            Submit
+          </button>
+        </div>
+        @if (subscribeMessage) {
+          <p class="mt-2 text-sm text-green-400">{{ subscribeMessage }}</p>
+        }
+      </div>
+
+      <!-- social icons -->
+      <div class="mt-6 flex items-center gap-4">
+        <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram"
+           class="w-9 h-9 rounded-full border border-gray-600 flex items-center justify-center text-gray-400 hover:text-white hover:border-white transition">
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4zm9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8A1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5a5 5 0 0 1-5 5a5 5 0 0 1-5-5a5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3"/>
+          </svg>
+        </a>
+        <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="X / Twitter"
+           class="w-9 h-9 rounded-full border border-gray-600 flex items-center justify-center text-gray-400 hover:text-white hover:border-white transition">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+        <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook"
+           class="w-9 h-9 rounded-full border border-gray-600 flex items-center justify-center text-gray-400 hover:text-white hover:border-white transition">
+          <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95"/>
+          </svg>
+        </a>
+        <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube"
+           class="w-9 h-9 rounded-full border border-gray-600 flex items-center justify-center text-gray-400 hover:text-white hover:border-white transition">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M10 15l5.19-3L10 9zm11.56-7.83c.13.47.22 1.1.28 1.9c.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83c-.25.9-.83 1.48-1.73 1.73c-.47.13-1.33.22-2.65.28c-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44c-.9-.25-1.48-.83-1.73-1.73c-.13-.47-.22-1.1-.28-1.9c-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83c.25-.9.83-1.48 1.73-1.73c.47-.13 1.33-.22 2.65-.28c1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44c.9.25 1.48.83 1.73 1.73"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- right  -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-10 lg:w-[60%]">
+      <!-- popular  -->
+      <div>
+        <h3 class="text-sm font-semibold mb-4 text-gray-300">POPULAR</h3>
+
+        <ul class="space-y-2 text-gray-400 text-sm">
+          <li><a [routerLink]="['/products','men','shoes']" class="hover:text-white">Shoes</a></li>
+          <li><a [routerLink]="['/products','men','t-shirt']" class="hover:text-white">T-Shirt</a></li>
+          <li><a [routerLink]="['/products','men','jackets']" class="hover:text-white">Jackets</a></li>
+          <li><a [routerLink]="['/products','men','hats']" class="hover:text-white">Hat</a></li>
+          <li><a [routerLink]="['/products','men','accessories']" class="hover:text-white">Accessories</a></li>
+        </ul>
+      </div>
+
+      <!-- menu  -->
+      <div>
+        <h3 class="text-sm font-semibold mb-4 text-gray-300">MENU</h3>
+
+        <ul class="space-y-2 text-gray-400 text-sm">
+          <li><a href="#" class="hover:text-white">All Category</a></li>
+          <li><a href="#" class="hover:text-white">Gift Cards</a></li>
+          <li><a href="#" class="hover:text-white">Special Events</a></li>
+          <li><a href="#" class="hover:text-white">Testimonial</a></li>
+          <li><a [routerLink]="['/blog']" class="hover:text-white">Blog</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold mb-4 text-gray-300">
+          OTHER
+        </h3>
+
+        <ul class="space-y-2 text-gray-400 text-sm">
+          <li><a href="#" class="hover:text-white">Tracking Package</a></li>
+          <li><a [routerLink]="['/faq']" class="hover:text-white">FAQ</a></li>
+          <li><a [routerLink]="['/about']" class="hover:text-white">About Us</a></li>
+          <li><a [routerLink]="['/contact']" class="hover:text-white">Contact Us</a></li>
+          <li><a [routerLink]="['/terms']" class="hover:text-white">Terms and Conditions</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- bottom bar -->
+  <div class="mt-10 pt-6 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+    <p>© 2026 Nexora. All rights reserved.</p>
+    <div class="flex items-center gap-4">
+      <a [routerLink]="['/terms']" class="hover:text-gray-300 transition">Privacy Policy</a>
+      <span class="text-gray-700">·</span>
+      <a [routerLink]="['/terms']" class="hover:text-gray-300 transition">Terms of Service</a>
+      <span class="text-gray-700">·</span>
+      <a [routerLink]="['/contact']" class="hover:text-gray-300 transition">Contact</a>
+    </div>
+  </div>
+</footer>

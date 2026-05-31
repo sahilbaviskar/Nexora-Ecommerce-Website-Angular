@@ -1,0 +1,324 @@
+<div class="px-4">
+  <hr class="w-[95%] mx-auto h-px bg-gray-400/50 border-0 my-6">
+</div>
+
+<div class="px-6 lg:px-10 pt-2">
+  <a routerLink="/" class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-black transition font-inter">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M15.41 7.41L14 6l-6 6l6 6l1.41-1.41L10.83 12z"/>
+    </svg>
+    Back to Home
+  </a>
+</div>
+
+<section class="max-w-6xl mx-auto px-6 lg:px-10 py-10">
+
+  <!-- Profile Header -->
+  <div class="bg-gray-50 rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center md:items-start gap-6">
+    <div class="w-24 h-24 bg-black text-white rounded-full flex items-center justify-center text-3xl font-bold font-inter shrink-0">
+      {{ getInitials() }}
+    </div>
+
+    <div class="flex-1 text-center md:text-left">
+      <h1 class="text-2xl md:text-3xl font-semibold font-inter">{{ user?.name }}</h1>
+      <p class="text-gray-500 mt-1">{{ user?.email }}</p>
+      <p class="text-xs text-gray-400 mt-2">Member since {{ getMemberSince() }}</p>
+
+      <div class="flex flex-wrap justify-center md:justify-start gap-6 mt-5">
+        <div class="text-center">
+          <p class="text-xl font-bold font-inter">{{ totalOrders }}</p>
+          <p class="text-xs text-gray-500">Orders</p>
+        </div>
+        <div class="text-center">
+          <p class="text-xl font-bold font-inter">{{ totalWishlist }}</p>
+          <p class="text-xs text-gray-500">Wishlist</p>
+        </div>
+        <div class="text-center">
+          <p class="text-xl font-bold font-inter">{{ totalCart }}</p>
+          <p class="text-xs text-gray-500">In Cart</p>
+        </div>
+      </div>
+    </div>
+
+    <button
+      (click)="logout()"
+      class="bg-black text-white rounded-full px-6 py-2.5 text-sm font-medium hover:opacity-70 transition cursor-pointer shrink-0"
+    >
+      Logout
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="mt-10 border-b border-gray-200">
+    <nav class="flex gap-8 overflow-x-auto">
+      <button
+        (click)="activeTab = 'overview'"
+        [class]="'pb-3 text-sm font-medium transition cursor-pointer whitespace-nowrap border-b-2 ' + (activeTab === 'overview' ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-black')"
+      >Overview</button>
+      <button
+        (click)="activeTab = 'orders'"
+        [class]="'pb-3 text-sm font-medium transition cursor-pointer whitespace-nowrap border-b-2 ' + (activeTab === 'orders' ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-black')"
+      >Orders</button>
+      <button
+        (click)="activeTab = 'addresses'"
+        [class]="'pb-3 text-sm font-medium transition cursor-pointer whitespace-nowrap border-b-2 ' + (activeTab === 'addresses' ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-black')"
+      >Addresses</button>
+      <button
+        (click)="activeTab = 'settings'"
+        [class]="'pb-3 text-sm font-medium transition cursor-pointer whitespace-nowrap border-b-2 ' + (activeTab === 'settings' ? 'border-black text-black' : 'border-transparent text-gray-400 hover:text-black')"
+      >Settings</button>
+    </nav>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="mt-8">
+
+    <!-- OVERVIEW TAB -->
+    @if (activeTab === 'overview') {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <a routerLink="/cart" class="group bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition cursor-pointer block">
+          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2s-.9-2-2-2M1 2v2h2l3.6 7.59l-1.35 2.45c-.16.28-.25.61-.25.96c0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12l.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0 0 20 4H5.21l-.94-2zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2s2-.9 2-2s-.9-2-2-2"/></svg>
+          </div>
+          <h3 class="mt-4 font-semibold font-inter">My Cart</h3>
+          <p class="text-sm text-gray-500 mt-1">{{ totalCart }} items in your cart</p>
+        </a>
+
+        <a routerLink="/wishlist" class="group bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition cursor-pointer block">
+          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54z"/></svg>
+          </div>
+          <h3 class="mt-4 font-semibold font-inter">Wishlist</h3>
+          <p class="text-sm text-gray-500 mt-1">{{ totalWishlist }} saved items</p>
+        </a>
+
+        <div (click)="activeTab = 'orders'" class="group bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition cursor-pointer">
+          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5s-.67 1.5-1.5 1.5m13.5-9l1.96 2.5H17V9.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5s-.67 1.5-1.5 1.5"/></svg>
+          </div>
+          <h3 class="mt-4 font-semibold font-inter">Orders</h3>
+          <p class="text-sm text-gray-500 mt-1">{{ totalOrders }} total orders</p>
+        </div>
+
+        <div (click)="activeTab = 'addresses'" class="group bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition cursor-pointer">
+          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7m0 9.5a2.5 2.5 0 0 1 0-5a2.5 2.5 0 0 1 0 5"/></svg>
+          </div>
+          <h3 class="mt-4 font-semibold font-inter">Addresses</h3>
+          <p class="text-sm text-gray-500 mt-1">{{ addresses.length }} saved addresses</p>
+        </div>
+
+        <div (click)="activeTab = 'settings'" class="group bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition cursor-pointer">
+          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19.14 12.94c.04-.3.06-.61.06-.94c0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6s3.6 1.62 3.6 3.6s-1.62 3.6-3.6 3.6"/></svg>
+          </div>
+          <h3 class="mt-4 font-semibold font-inter">Account Settings</h3>
+          <p class="text-sm text-gray-500 mt-1">Manage your profile</p>
+        </div>
+
+        <a routerLink="/collections" class="group bg-gray-50 rounded-2xl p-6 hover:bg-gray-100 transition cursor-pointer block">
+          <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M4 8h4V4H4zm6 12h4v-4h-4zm-6 0h4v-4H4zm0-6h4v-4H4zm6 0h4v-4h-4zM16 4v4h4V4zm-6-4h4v4h-4zm6 12h4v-4h-4zm0 6h4v-4h-4z"/></svg>
+          </div>
+          <h3 class="mt-4 font-semibold font-inter">Collections</h3>
+          <p class="text-sm text-gray-500 mt-1">Browse collections</p>
+        </a>
+
+      </div>
+    }
+
+    <!-- ORDERS TAB -->
+    @if (activeTab === 'orders') {
+      <div>
+        @if (orders.length === 0) {
+          <div class="text-center py-16">
+            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"><path fill="currentColor" opacity="0.4" d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5s-.67 1.5-1.5 1.5m13.5-9l1.96 2.5H17V9.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5s1.5.67 1.5 1.5s-.67 1.5-1.5 1.5"/></svg>
+            </div>
+            <h3 class="mt-6 text-lg font-semibold font-inter">No orders yet</h3>
+            <p class="text-gray-500 text-sm mt-2">Your order history will appear here once you make a purchase.</p>
+            <a routerLink="/products/men" class="inline-block mt-6 bg-black text-white rounded-full px-8 py-3 text-sm font-medium hover:opacity-70 transition">
+              Start Shopping
+            </a>
+          </div>
+        } @else {
+          <div class="space-y-4">
+            @for (order of orders; track order.id) {
+              <div class="bg-gray-50 rounded-2xl p-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <p class="text-sm font-semibold font-inter">Order #{{ order.id }}</p>
+                    <p class="text-xs text-gray-500 mt-1">{{ order.date }}</p>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <span
+                      [class]="'px-3 py-1 rounded-full text-xs font-medium ' +
+                        (order.status === 'delivered' ? 'bg-green-100 text-green-700' :
+                         order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
+                         order.status === 'processing' ? 'bg-yellow-100 text-yellow-700' :
+                         'bg-red-100 text-red-700')"
+                    >
+                      {{ order.status }}
+                    </span>
+                    <p class="font-semibold font-inter">₹{{ order.total }}</p>
+                  </div>
+                </div>
+                <div class="mt-4 flex flex-wrap gap-3">
+                  @for (item of order.items; track item.title) {
+                    <div class="flex items-center gap-3 bg-white rounded-xl px-3 py-2">
+                      <img [src]="item.image" [alt]="item.title" class="w-10 h-10 object-cover rounded-lg">
+                      <div>
+                        <p class="text-xs font-medium truncate max-w-[120px]">{{ item.title }}</p>
+                        <p class="text-xs text-gray-400">Qty: {{ item.quantity }}</p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ADDRESSES TAB -->
+    @if (activeTab === 'addresses') {
+      <div>
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-lg font-semibold font-inter">Saved Addresses</h2>
+          <button
+            (click)="showAddressForm = !showAddressForm"
+            class="bg-black text-white rounded-full px-5 py-2.5 text-sm font-medium hover:opacity-70 transition cursor-pointer"
+          >
+            {{ showAddressForm ? 'Cancel' : '+ Add Address' }}
+          </button>
+        </div>
+
+        @if (showAddressForm) {
+          <div class="bg-gray-50 rounded-2xl p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">Full Name</label>
+                <input [(ngModel)]="newAddress.name" type="text" placeholder="John Doe" class="w-full mt-1 px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-black transition">
+              </div>
+              <div>
+                <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">Phone</label>
+                <input [(ngModel)]="newAddress.phone" type="tel" placeholder="+91 9876543210" class="w-full mt-1 px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-black transition">
+              </div>
+              <div class="md:col-span-2">
+                <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">Street Address</label>
+                <input [(ngModel)]="newAddress.street" type="text" placeholder="123 Main Street, Apt 4" class="w-full mt-1 px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-black transition">
+              </div>
+              <div>
+                <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">City</label>
+                <input [(ngModel)]="newAddress.city" type="text" placeholder="Mumbai" class="w-full mt-1 px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-black transition">
+              </div>
+              <div>
+                <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">State</label>
+                <input [(ngModel)]="newAddress.state" type="text" placeholder="Maharashtra" class="w-full mt-1 px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-black transition">
+              </div>
+              <div>
+                <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">ZIP Code</label>
+                <input [(ngModel)]="newAddress.zip" type="text" placeholder="400001" class="w-full mt-1 px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-black transition">
+              </div>
+              <div>
+                <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">Label</label>
+                <select [(ngModel)]="newAddress.label" class="w-full mt-1 px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-black transition bg-white">
+                  <option value="Home">Home</option>
+                  <option value="Work">Work</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+            <button
+              (click)="addAddress()"
+              [disabled]="!newAddress.name || !newAddress.street || !newAddress.city || !newAddress.zip"
+              class="mt-5 bg-black text-white rounded-full px-8 py-3 text-sm font-medium hover:opacity-70 transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              Save Address
+            </button>
+          </div>
+        }
+
+        @if (addresses.length === 0 && !showAddressForm) {
+          <div class="text-center py-16">
+            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24"><path fill="currentColor" opacity="0.4" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7m0 9.5a2.5 2.5 0 0 1 0-5a2.5 2.5 0 0 1 0 5"/></svg>
+            </div>
+            <h3 class="mt-6 text-lg font-semibold font-inter">No addresses saved</h3>
+            <p class="text-gray-500 text-sm mt-2">Add a delivery address for faster checkout.</p>
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            @for (address of addresses; track address.id) {
+              <div class="bg-gray-50 rounded-2xl p-5 relative">
+                @if (address.isDefault) {
+                  <span class="absolute top-4 right-4 px-2 py-0.5 bg-black text-white text-[10px] font-medium rounded-full">Default</span>
+                }
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="text-xs font-semibold uppercase tracking-wide text-gray-400">{{ address.label }}</span>
+                </div>
+                <p class="font-medium text-sm">{{ address.name }}</p>
+                <p class="text-sm text-gray-600 mt-1">{{ address.street }}</p>
+                <p class="text-sm text-gray-600">{{ address.city }}, {{ address.state }} {{ address.zip }}</p>
+                <p class="text-sm text-gray-500 mt-1">{{ address.phone }}</p>
+                <div class="flex gap-3 mt-4">
+                  @if (!address.isDefault) {
+                    <button (click)="setDefaultAddress(address.id)" class="text-xs text-gray-500 hover:text-black transition cursor-pointer">Set as default</button>
+                  }
+                  <button (click)="removeAddress(address.id)" class="text-xs text-red-500 hover:text-red-700 transition cursor-pointer">Remove</button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- SETTINGS TAB -->
+    @if (activeTab === 'settings') {
+      <div class="max-w-lg">
+        <h2 class="text-lg font-semibold font-inter mb-6">Account Settings</h2>
+
+        <div class="space-y-5">
+          <div>
+            <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">Full Name</label>
+            <input [(ngModel)]="editName" type="text" disabled class="w-full mt-1 px-4 py-3 rounded-xl border border-gray-200 text-sm bg-gray-50 text-gray-400 cursor-not-allowed">
+            <p class="text-[11px] text-gray-400 mt-1">Name cannot be changed</p>
+          </div>
+
+          <div>
+            <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">Email</label>
+            <input [(ngModel)]="editEmail" type="email" disabled class="w-full mt-1 px-4 py-3 rounded-xl border border-gray-200 text-sm bg-gray-50 text-gray-400 cursor-not-allowed">
+            <p class="text-[11px] text-gray-400 mt-1">Email cannot be changed</p>
+          </div>
+
+          <div>
+            <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">Phone Number</label>
+            <input [(ngModel)]="editPhone" type="tel" placeholder="+91 9876543210" class="w-full mt-1 px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-black transition">
+          </div>
+
+          <button
+            (click)="saveSettings()"
+            class="bg-black text-white rounded-full px-8 py-3 text-sm font-medium hover:opacity-70 transition cursor-pointer"
+          >
+            Save Changes
+          </button>
+        </div>
+
+        <div class="mt-12 pt-8 border-t border-gray-200">
+          <h3 class="text-sm font-semibold text-red-600">Danger Zone</h3>
+          <p class="text-xs text-gray-500 mt-1">Once you delete your account, there is no going back.</p>
+          <button
+            (click)="logout()"
+            class="mt-4 border border-red-200 text-red-600 rounded-full px-6 py-2.5 text-sm font-medium hover:bg-red-50 transition cursor-pointer"
+          >
+            Logout from Account
+          </button>
+        </div>
+      </div>
+    }
+
+  </div>
+</section>
