@@ -48,7 +48,48 @@ export class AdminProducts implements OnInit {
   confirmDeleteId: number | null = null;
   deleting = false;
 
-  constructor(private adminService: AdminService, private cdr: ChangeDetectorRef) {}
+  // Bulk selection
+  selectedIds = new Set<number>();
+  bulkDeleting = false;
+
+  get allSelected(): boolean {
+    return this.filtered.length > 0 && this.filtered.every(p => this.selectedIds.has(p.productId));
+  }
+
+  toggleSelectAll() {
+    if (this.allSelected) {
+      this.filtered.forEach(p => this.selectedIds.delete(p.productId));
+    } else {
+      this.filtered.forEach(p => this.selectedIds.add(p.productId));
+    }
+    this.cdr.markForCheck();
+  }
+
+  toggleSelect(id: number) {
+    if (this.selectedIds.has(id)) this.selectedIds.delete(id);
+    else this.selectedIds.add(id);
+    this.cdr.markForCheck();
+  }
+
+  bulkDelete() {
+    if (this.bulkDeleting || this.selectedIds.size === 0) return;
+    this.bulkDeleting = true;
+    const ids = Array.from(this.selectedIds);
+    this.adminService.bulkDeleteProducts(ids).subscribe({
+      next: () => {
+        this.selectedIds.clear();
+        this.bulkDeleting = false;
+        this.loadProducts();
+      },
+      error: (err) => {
+        this.error = err?.error?.message || 'Bulk delete failed';
+        this.bulkDeleting = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  constructor(private adminService: AdminService, public cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.loadProducts();
@@ -59,6 +100,7 @@ export class AdminProducts implements OnInit {
     this.adminService.getProducts(1, 200).subscribe({
       next: (res) => {
         this.products = res.items || [];
+        this.selectedIds.clear();
         this.applyFilter();
         this.loading = false;
         this.cdr.markForCheck();

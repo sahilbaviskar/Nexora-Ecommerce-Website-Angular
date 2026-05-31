@@ -6,6 +6,15 @@ export async function updateProfile(userId: any, data: any) {
   return User.findByIdAndUpdate(userId, data, { new: true, runValidators: true, select: '-password' });
 }
 
+export async function changePassword(userId: any, currentPassword: string, newPassword: string) {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError('User not found', 404);
+  const valid = await user.comparePassword(currentPassword);
+  if (!valid) throw new AppError('Current password is incorrect', 401);
+  user.password = newPassword;
+  await user.save();
+}
+
 export async function listAddresses(userId: any) {
   return Address.find({ user: userId }).sort({ isDefault: -1, createdAt: -1 });
 }

@@ -8,6 +8,11 @@ export const updateProfileSchema = Joi.object({
   phone: Joi.string().trim().allow('').optional()
 }).min(1);
 
+export const changePasswordSchema = Joi.object({
+  currentPassword: Joi.string().required(),
+  newPassword: Joi.string().min(6).max(128).required()
+});
+
 export const addressSchema = Joi.object({
   type: Joi.string().valid('home', 'office', 'other').default('home'),
   fullName: Joi.string().trim().required(),
@@ -48,4 +53,9 @@ export const updateAddress = async (req: Request, res: Response): Promise<void> 
 export const deleteAddress = async (req: Request, res: Response): Promise<void> => {
   await ProfileService.removeAddress(req.user._id, req.params.id as string);
   res.json({ message: 'Address deleted' });
+};
+
+export const changePassword = async (req: Request, res: Response): Promise<void> => {
+  await ProfileService.changePassword(req.user._id, req.body.currentPassword, req.body.newPassword);
+  res.json({ message: 'Password changed successfully' });
 };

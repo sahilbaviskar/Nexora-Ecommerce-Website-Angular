@@ -7,6 +7,8 @@ import {
   getUserOrders,
   getOrder,
   updateOrderStatus,
+  cancelOrder,
+  bulkUpdateOrderStatus,
   createOrderSchema,
   statusSchema
 } from '../controllers/orders.controller';
@@ -16,6 +18,8 @@ const router = express.Router();
 router.post('/', protect, validate(createOrderSchema), createOrder);
 router.get('/', protect, getUserOrders);
 router.get('/:id', protect, getOrder);
+router.patch('/bulk-status', protect, adminOnly, bulkUpdateOrderStatus);
+router.patch('/:id/cancel', protect, cancelOrder);
 router.patch('/:id/status', protect, adminOnly, validate(statusSchema), updateOrderStatus);
 
 export default router;

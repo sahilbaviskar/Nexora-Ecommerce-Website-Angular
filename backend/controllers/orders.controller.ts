@@ -54,3 +54,18 @@ export const updateOrderStatus = async (req: Request, res: Response): Promise<vo
   const order = await OrderService.changeOrderStatus(req.params.id as string, req.body);
   res.json({ message: 'Order updated', order });
 };
+
+export const cancelOrder = async (req: Request, res: Response): Promise<void> => {
+  const order = await OrderService.cancelUserOrder(req.params.id as string, req.user._id);
+  res.json({ message: 'Order cancelled', order });
+};
+
+export const bulkUpdateOrderStatus = async (req: Request, res: Response): Promise<void> => {
+  const { ids, status } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0 || !status) {
+    res.status(400).json({ message: 'ids and status are required' });
+    return;
+  }
+  await Promise.all(ids.map(id => OrderService.changeOrderStatus(id as string, { status })));
+  res.json({ message: `${ids.length} order(s) updated to "${status}"`, updated: ids.length });
+};

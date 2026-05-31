@@ -1,0 +1,120 @@
+<div class="p-6 md:p-8 space-y-8">
+  <h1 class="text-2xl font-bold font-inter">Reports & Analytics</h1>
+
+  @if (loading) {
+    <div class="flex items-center justify-center h-64 text-gray-400">
+      <svg class="animate-spin h-8 w-8" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+      </svg>
+    </div>
+  } @else if (error) {
+    <div class="bg-red-50 border border-red-200 text-red-600 px-5 py-4 rounded-xl text-sm">{{ error }}</div>
+  } @else {
+
+    <!-- Monthly Revenue -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <h2 class="text-base font-semibold font-inter mb-6">Monthly Revenue (last 6 months)</h2>
+      @if (monthlyRevenue.length === 0) {
+        <p class="text-gray-400 text-sm">No revenue data yet.</p>
+      } @else {
+        <div class="flex items-end gap-3 h-48">
+          @for (m of monthlyRevenue; track m.label) {
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <span class="text-[10px] text-gray-500 font-medium">₹{{ (m.revenue / 1000).toFixed(1) }}k</span>
+              <div
+                class="w-full bg-black rounded-t-lg transition-all"
+                [style.height.%]="(m.revenue / maxRevenue) * 100"
+                style="min-height: 4px;"
+              ></div>
+              <span class="text-[10px] text-gray-400 text-center">{{ m.label }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      <!-- Orders by Status -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-base font-semibold font-inter mb-6">Orders by Status</h2>
+        @if (ordersByStatus.length === 0) {
+          <p class="text-gray-400 text-sm">No orders yet.</p>
+        } @else {
+          <div class="space-y-3">
+            @for (s of ordersByStatus; track s._id) {
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="capitalize font-medium">{{ s._id }}</span>
+                  <span class="text-gray-500">{{ s.count }} ({{ totalOrders ? ((s.count / totalOrders) * 100).toFixed(0) : 0 }}%)</span>
+                </div>
+                <div class="w-full bg-gray-100 rounded-full h-2">
+                  <div
+                    [class]="'h-2 rounded-full ' + statusColor(s._id)"
+                    [style.width.%]="totalOrders ? (s.count / totalOrders) * 100 : 0"
+                  ></div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- New Users per Month -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-base font-semibold font-inter mb-6">New Users (last 6 months)</h2>
+        @if (monthlyUsers.length === 0) {
+          <p class="text-gray-400 text-sm">No user data yet.</p>
+        } @else {
+          <div class="flex items-end gap-3 h-36">
+            @for (m of monthlyUsers; track m.label) {
+              <div class="flex-1 flex flex-col items-center gap-2">
+                <span class="text-[10px] text-gray-500 font-medium">{{ m.count }}</span>
+                <div
+                  class="w-full bg-gray-800 rounded-t-lg"
+                  [style.height.%]="(m.count / maxUsers) * 100"
+                  style="min-height: 4px;"
+                ></div>
+                <span class="text-[10px] text-gray-400 text-center">{{ m.label }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Top Selling Products -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <h2 class="text-base font-semibold font-inter mb-6">Top Selling Products</h2>
+      @if (topProducts.length === 0) {
+        <p class="text-gray-400 text-sm">No sales data yet.</p>
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-xs text-gray-400 uppercase tracking-wide border-b border-gray-100">
+                <th class="pb-3 font-medium">Product</th>
+                <th class="pb-3 font-medium text-right">Units Sold</th>
+                <th class="pb-3 font-medium text-right">Revenue</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              @for (p of topProducts; track p._id) {
+                <tr>
+                  <td class="py-3 flex items-center gap-3">
+                    <img [src]="p.image" [alt]="p.title" class="w-10 h-10 object-cover rounded-lg shrink-0">
+                    <span class="font-medium truncate max-w-[200px]">{{ p.title }}</span>
+                  </td>
+                  <td class="py-3 text-right font-semibold">{{ p.totalSold }}</td>
+                  <td class="py-3 text-right text-green-600 font-semibold">₹{{ p.revenue.toLocaleString() }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
+  }
+</div>

@@ -85,6 +85,10 @@ export const routes: Routes = [
       {
         path: 'terms',
         loadComponent: () => import('./features/terms/terms').then((m) => m.Terms),
+      },
+      {
+        path: 'compare',
+        loadComponent: () => import('./features/compare/compare').then((m) => m.ComparePage),
       }
     ],
   },
@@ -99,6 +103,14 @@ export const routes: Routes = [
       {
         path: 'signup',
         loadComponent: () => import('./features/auth/signup/signup').then((m) => m.Signup),
+      },
+      {
+        path: 'forgot-password',
+        loadComponent: () => import('./features/auth/forgot-password/forgot-password').then((m) => m.ForgotPassword),
+      },
+      {
+        path: 'reset-password',
+        loadComponent: () => import('./features/auth/reset-password/reset-password').then((m) => m.ResetPassword),
       },
     ],
   },
@@ -115,7 +127,8 @@ export const routes: Routes = [
       { path: 'dashboard', loadComponent: () => import('./features/admin/dashboard/admin-dashboard').then((m) => m.AdminDashboard) },
       { path: 'products',  loadComponent: () => import('./features/admin/products/admin-products').then((m) => m.AdminProducts) },
       { path: 'orders',    loadComponent: () => import('./features/admin/orders/admin-orders').then((m) => m.AdminOrders) },
-      { path: 'users',     loadComponent: () => import('./features/admin/users/admin-users').then((m) => m.AdminUsers) }
+      { path: 'users',     loadComponent: () => import('./features/admin/users/admin-users').then((m) => m.AdminUsers) },
+      { path: 'reports',   loadComponent: () => import('./features/admin/reports/admin-reports').then((m) => m.AdminReports) }
     ]
   },
   {

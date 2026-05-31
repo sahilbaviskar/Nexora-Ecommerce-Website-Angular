@@ -49,3 +49,13 @@ export const deleteProduct = async (req: Request, res: Response): Promise<void> 
   await ProductService.removeProduct(Number(req.params.id));
   res.json({ message: 'Product deleted' });
 };
+
+export const bulkDeleteProducts = async (req: Request, res: Response): Promise<void> => {
+  const ids: number[] = req.body.ids;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    res.status(400).json({ message: 'No product IDs provided' });
+    return;
+  }
+  await Promise.all(ids.map(id => ProductService.removeProduct(Number(id))));
+  res.json({ message: `${ids.length} product(s) deleted`, deleted: ids.length });
+};

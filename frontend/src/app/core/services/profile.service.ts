@@ -26,7 +26,7 @@ export class ProfileService {
   }
 
   updateProfile(payload: { name?: string; phone?: string }): Observable<any> {
-    return this.http.put<{ user: any }>(this.apiUrl, payload).pipe(map((res) => res.user));
+    return this.http.patch<{ user: any }>(this.apiUrl, payload).pipe(map((res) => res.user));
   }
 
   getAddresses(): Observable<any[]> {
@@ -42,12 +42,16 @@ export class ProfileService {
   }
 
   updateAddress(id: string, payload: AddressPayload): Observable<any> {
-    return this.http.put<{ address: any }>(`${this.apiUrl}/addresses/${id}`, payload).pipe(
+    return this.http.patch<{ address: any }>(`${this.apiUrl}/addresses/${id}`, payload).pipe(
       map((res) => res.address)
     );
   }
 
   deleteAddress(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/addresses/${id}`);
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/password`, { currentPassword, newPassword });
   }
 }

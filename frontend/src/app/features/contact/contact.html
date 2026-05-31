@@ -79,6 +79,9 @@
           >
             {{ sending ? 'Sending...' : 'Send Message' }}
           </button>
+          @if (errorMsg) {
+            <p class="text-red-500 text-sm mt-2 text-center">{{ errorMsg }}</p>
+          }
         </form>
       }
     </div>

@@ -1,0 +1,88 @@
+<div class="max-w-6xl mx-auto px-4 py-10">
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="text-2xl font-bold font-inter">Product Comparison</h1>
+    @if (items.length > 0) {
+      <button (click)="compareService.clear()" class="text-sm text-gray-500 hover:text-black transition cursor-pointer">
+        Clear all
+      </button>
+    }
+  </div>
+
+  @if (items.length < 2) {
+    <div class="text-center py-24 text-gray-400">
+      <svg class="w-16 h-16 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+      </svg>
+      <p class="text-lg font-medium text-gray-600">Add at least 2 products to compare</p>
+      <p class="text-sm mt-2">Browse products and click the compare icon to add them here.</p>
+      <a routerLink="/products/men" class="inline-block mt-6 bg-black text-white rounded-full px-8 py-3 text-sm font-medium hover:opacity-70 transition">
+        Browse Products
+      </a>
+    </div>
+  } @else {
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse">
+
+        <!-- Product header row -->
+        <thead>
+          <tr>
+            <th class="text-left text-sm text-gray-500 font-medium pb-4 pr-6 w-32">Product</th>
+            @for (p of items; track p.productId) {
+              <th class="pb-4 px-4 text-center align-top">
+                <div class="relative inline-block">
+                  <button
+                    (click)="compareService.remove(p.productId)"
+                    class="absolute -top-2 -right-2 w-5 h-5 bg-gray-200 hover:bg-red-100 hover:text-red-500 rounded-full flex items-center justify-center transition cursor-pointer"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                  <a [routerLink]="['/product', p.slug]">
+                    <img [src]="p.image" [alt]="p.title" class="w-32 h-32 object-cover rounded-2xl mx-auto bg-gray-100 hover:opacity-80 transition"/>
+                  </a>
+                  <p class="mt-3 text-sm font-semibold font-inter text-gray-800 max-w-36 mx-auto leading-tight">{{ p.title }}</p>
+                  <p class="text-base font-bold mt-1">₹{{ p.price | number }}</p>
+                  <a [routerLink]="['/product', p.slug]"
+                     class="inline-block mt-2 text-xs bg-black text-white rounded-full px-4 py-1.5 hover:opacity-70 transition">
+                    View
+                  </a>
+                </div>
+              </th>
+            }
+          </tr>
+        </thead>
+
+        <!-- Comparison rows -->
+        <tbody>
+          @for (row of rows; track row.key) {
+            <tr class="border-t border-gray-100">
+              <td class="py-4 pr-6 text-sm text-gray-500 font-medium align-top whitespace-nowrap">{{ row.label }}</td>
+              @for (p of items; track p.productId) {
+                <td class="py-4 px-4 text-center text-sm align-top">
+                  @if (row.format === 'currency') {
+                    <span class="font-bold text-base">₹{{ p.price | number }}</span>
+                  } @else if (row.format === 'stock') {
+                    <span [class]="'font-medium ' + stockClass(p)">{{ cellValue(p, row) }}</span>
+                  } @else {
+                    <span class="capitalize text-gray-700">{{ cellValue(p, row) }}</span>
+                  }
+                </td>
+              }
+            </tr>
+          }
+
+          <!-- Description row -->
+          <tr class="border-t border-gray-100">
+            <td class="py-4 pr-6 text-sm text-gray-500 font-medium align-top">Description</td>
+            @for (p of items; track p.productId) {
+              <td class="py-4 px-4 text-center text-xs text-gray-600 align-top leading-relaxed max-w-48">
+                {{ p.description || '—' }}
+              </td>
+            }
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

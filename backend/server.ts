@@ -19,6 +19,7 @@ import wishlistRoutes from './routes/wishlist.routes';
 import profileRoutes from './routes/profile.routes';
 import adminRoutes from './routes/admin.routes';
 import blogRoutes from './routes/blog.routes';
+import contactRoutes from './routes/contact.routes';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -55,6 +56,7 @@ app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/blogs', blogRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

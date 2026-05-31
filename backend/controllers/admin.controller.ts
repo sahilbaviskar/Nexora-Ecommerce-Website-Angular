@@ -20,3 +20,8 @@ export const getDashboard = async (req: Request, res: Response): Promise<void> =
   const data = await AdminService.fetchDashboard();
   res.json(data);
 };
+
+export const getReports = async (req: Request, res: Response): Promise<void> => {
+  const data = await AdminService.fetchReports();
+  res.json(data);
+};

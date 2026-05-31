@@ -20,10 +20,58 @@ export class AdminOrders implements OnInit {
 
   updatingId: string | null = null;
 
+  // Bulk selection
+  selectedIds = new Set<string>();
+  bulkStatus = '';
+  bulkUpdating = false;
+
+  get allSelected(): boolean {
+    return this.filtered.length > 0 && this.filtered.every(o => this.selectedIds.has(o._id));
+  }
+
+  toggleSelectAll() {
+    if (this.allSelected) {
+      this.filtered.forEach(o => this.selectedIds.delete(o._id));
+    } else {
+      this.filtered.forEach(o => this.selectedIds.add(o._id));
+    }
+    this.cdr.markForCheck();
+  }
+
+  toggleSelect(id: string) {
+    if (this.selectedIds.has(id)) this.selectedIds.delete(id);
+    else this.selectedIds.add(id);
+    this.cdr.markForCheck();
+  }
+
+  bulkUpdateStatus() {
+    if (this.bulkUpdating || this.selectedIds.size === 0 || !this.bulkStatus) return;
+    this.bulkUpdating = true;
+    const ids = Array.from(this.selectedIds);
+    this.adminService.bulkUpdateOrderStatus(ids, this.bulkStatus).subscribe({
+      next: () => {
+        ids.forEach(id => {
+          const o = this.orders.find(x => x._id === id);
+          if (o) o.status = this.bulkStatus;
+        });
+        this.selectedIds.clear();
+        this.bulkStatus = '';
+        this.bulkUpdating = false;
+        this.applyFilter();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.error = err?.error?.message || 'Bulk update failed';
+        this.bulkUpdating = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
   readonly statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
   readonly paymentStatuses = ['pending', 'paid', 'failed'];
 
-  constructor(private adminService: AdminService, private cdr: ChangeDetectorRef) {}
+  constructor(private adminService: AdminService, public cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.loadOrders();
@@ -34,6 +82,7 @@ export class AdminOrders implements OnInit {
     this.adminService.getAllOrders().subscribe({
       next: (res) => {
         this.orders = res.orders || [];
+        this.selectedIds.clear();
         this.applyFilter();
         this.loading = false;
         this.cdr.markForCheck();

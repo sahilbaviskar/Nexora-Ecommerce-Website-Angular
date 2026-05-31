@@ -9,14 +9,17 @@ import {
   addAddress,
   updateAddress,
   deleteAddress,
+  changePassword,
   updateProfileSchema,
-  addressSchema
+  addressSchema,
+  changePasswordSchema
 } from '../controllers/profile.controller';
 
 const router = express.Router();
 
 router.get('/', protect, getProfile);
 router.patch('/', protect, validate(updateProfileSchema), updateProfile);
+router.patch('/password', protect, validate(changePasswordSchema), changePassword);
 router.get('/addresses', protect, getAddresses);
 router.post('/addresses', protect, validate(addressSchema), addAddress);
 router.patch('/addresses/:id', protect, validate(addressSchema), updateAddress);

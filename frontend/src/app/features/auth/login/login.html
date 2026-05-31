@@ -29,7 +29,7 @@
             </div>
           }
 
-          <form (ngSubmit)="onSubmit()" class="mt-6 flex flex-col gap-5">
+          <form (ngSubmit)="onSubmit()" class="mt-4 flex flex-col gap-5">
             <div>
               <label class="text-xs font-medium text-gray-500 tracking-wider" for="email"
                 >Email</label
@@ -65,9 +65,13 @@
             >
               Sign In
             </button>
+
+            <p class="text-center text-sm text-gray-500">
+              <a routerLink="/forgot-password" class="text-black font-medium hover:underline">Forgot password?</a>
+            </p>
           </form>
 
-          <div class="flex items-center gap-3 my-6">
+          <div class="flex items-center gap-3 my-4">
             <div class="flex-1 bg-gray-300 h-px"></div>
             <span class="text-xs text-gray-400">OR</span>
             <div class="flex-1 h-px bg-gray-300"></div>

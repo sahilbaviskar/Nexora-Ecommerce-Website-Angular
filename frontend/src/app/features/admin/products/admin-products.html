@@ -6,11 +6,22 @@
     </button>
   </div>
 
-  <!-- Search -->
-  <div class="mb-4">
+  <!-- Search + Bulk bar -->
+  <div class="mb-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
     <input [(ngModel)]="search" (ngModelChange)="applyFilter()" type="text"
            placeholder="Search by title, category or ID…"
            class="w-full sm:max-w-sm border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"/>
+    @if (selectedIds.size > 0) {
+      <div class="flex items-center gap-3 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+        <span class="text-sm text-red-700 font-medium">{{ selectedIds.size }} selected</span>
+        <button
+          (click)="bulkDelete()"
+          [disabled]="bulkDeleting"
+          class="text-xs bg-red-600 text-white rounded-lg px-3 py-1.5 hover:bg-red-700 transition disabled:opacity-50 cursor-pointer"
+        >{{ bulkDeleting ? 'Deleting…' : 'Delete selected' }}</button>
+        <button (click)="selectedIds.clear(); cdr.markForCheck()" class="text-xs text-red-500 hover:text-red-700 cursor-pointer">Clear</button>
+      </div>
+    }
   </div>
 
   @if (error) {
@@ -27,6 +38,9 @@
         <table class="w-full text-sm">
           <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
             <tr>
+              <th class="px-4 py-3 text-left w-8">
+                <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll()" class="rounded cursor-pointer"/>
+              </th>
               <th class="px-4 py-3 text-left">Image</th>
               <th class="px-4 py-3 text-left">ID</th>
               <th class="px-4 py-3 text-left">Title</th>
@@ -38,7 +52,10 @@
           </thead>
           <tbody class="divide-y divide-gray-100">
             @for (p of filtered; track p.productId) {
-              <tr class="hover:bg-gray-50">
+              <tr class="hover:bg-gray-50" [class.bg-blue-50]="selectedIds.has(p.productId)">
+                <td class="px-4 py-2">
+                  <input type="checkbox" [checked]="selectedIds.has(p.productId)" (change)="toggleSelect(p.productId)" class="rounded cursor-pointer"/>
+                </td>
                 <td class="px-4 py-2">
                   <img [src]="p.image" [alt]="p.title"
                        class="w-10 h-10 object-cover rounded-md bg-gray-100"/>
@@ -61,7 +78,7 @@
               </tr>
             }
             @empty {
-              <tr><td colspan="7" class="px-6 py-10 text-center text-gray-400">No products found.</td></tr>
+              <tr><td colspan="8" class="px-6 py-10 text-center text-gray-400">No products found.</td></tr>
             }
           </tbody>
         </table>

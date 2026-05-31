@@ -120,6 +120,28 @@ export class ProductDetail implements OnInit {
 
   selectedImage:string = '';
   relatedProducts:Product[] = [];
+  recentlyViewed: Product[] = [];
+
+  private readonly RECENTLY_VIEWED_KEY = 'recently_viewed_v1';
+  private readonly MAX_RECENT = 6;
+
+  private saveRecentlyViewed(product: Product) {
+    let items: Product[] = [];
+    try {
+      items = JSON.parse(localStorage.getItem(this.RECENTLY_VIEWED_KEY) || '[]');
+    } catch { items = []; }
+    items = items.filter(p => p.slug !== product.slug);
+    items.unshift(product);
+    items = items.slice(0, this.MAX_RECENT);
+    localStorage.setItem(this.RECENTLY_VIEWED_KEY, JSON.stringify(items));
+  }
+
+  private loadRecentlyViewed(currentSlug: string): Product[] {
+    try {
+      const items: Product[] = JSON.parse(localStorage.getItem(this.RECENTLY_VIEWED_KEY) || '[]');
+      return items.filter(p => p.slug !== currentSlug).slice(0, 4);
+    } catch { return []; }
+  }
 
 
   ngOnInit(){
@@ -142,6 +164,8 @@ export class ProductDetail implements OnInit {
         p.subcategory === this.product.subcategory &&
         p.slug !== this.product.slug
       ).slice(0, 4);
+      this.recentlyViewed = this.loadRecentlyViewed(this.product.slug);
+      this.saveRecentlyViewed(this.product);
       this.cdr.markForCheck();
     });
   }

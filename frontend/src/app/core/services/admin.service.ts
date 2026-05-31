@@ -26,7 +26,7 @@ export class AdminService {
   updateOrderStatus(id: string, status: string, paymentStatus?: string): Observable<any> {
     const body: any = { status };
     if (paymentStatus) body.paymentStatus = paymentStatus;
-    return this.http.put(`${this.api}/orders/${id}/status`, body);
+    return this.http.patch(`${this.api}/orders/${id}/status`, body);
   }
 
   // Products
@@ -44,5 +44,19 @@ export class AdminService {
 
   deleteProduct(productId: number): Observable<any> {
     return this.http.delete(`${this.api}/products/${productId}`);
+  }
+
+  // Reports
+  getReports(): Observable<any> {
+    return this.http.get(`${this.api}/admin/reports`);
+  }
+
+  // Bulk actions
+  bulkDeleteProducts(productIds: number[]): Observable<any> {
+    return this.http.delete(`${this.api}/products/bulk`, { body: { ids: productIds } });
+  }
+
+  bulkUpdateOrderStatus(ids: string[], status: string): Observable<any> {
+    return this.http.patch(`${this.api}/orders/bulk-status`, { ids, status });
   }
 }

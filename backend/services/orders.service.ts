@@ -65,6 +65,22 @@ export async function placeOrder(userId: any, body: any) {
   return order;
 }
 
+export async function cancelUserOrder(orderId: string, userId: any) {
+  const order = await Order.findOne({ _id: orderId, user: userId });
+  if (!order) throw new AppError('Order not found', 404);
+  if (order.status !== 'pending') {
+    throw new AppError('Only pending orders can be cancelled', 400);
+  }
+  order.status = 'cancelled';
+  await order.save();
+  await Promise.all(
+    (order.items as any[]).map((item: any) =>
+      Product.updateOne({ productId: item.productId }, { $inc: { stock: item.quantity } })
+    )
+  );
+  return order;
+}
+
 export async function listUserOrders(userId: any) {
   return Order.find({ user: userId }).sort({ createdAt: -1 });
 }

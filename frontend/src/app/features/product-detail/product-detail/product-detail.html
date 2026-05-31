@@ -180,6 +180,19 @@
 
   <!-- Reviews Section -->
   <app-product-reviews [slug]="product.slug" [initialReviews]="reviews"></app-product-reviews>
+
+  <!-- Recently Viewed -->
+  @if (recentlyViewed.length > 0) {
+    <div class="mt-16">
+      <h2 class="text-2xl font-semibold font-inter mb-8">Recently Viewed</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        @for (item of recentlyViewed; track item.slug) {
+          <app-product-card [product]="item"></app-product-card>
+        }
+      </div>
+    </div>
+  }
+
   } <!-- end @if (product) -->
 
 </section>

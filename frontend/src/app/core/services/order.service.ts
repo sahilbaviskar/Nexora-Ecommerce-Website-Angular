@@ -31,4 +31,8 @@ export class OrderService {
       map((res) => res.orders || [])
     );
   }
+
+  cancelOrder(orderId: string): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/${orderId}/cancel`, {});
+  }
 }

@@ -2,6 +2,54 @@ import Order from '../models/Order';
 import Product from '../models/Product';
 import User from '../models/User';
 
+export async function fetchReports() {
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+  const [monthlyRevenue, ordersByStatus, topProducts, monthlyUsers] = await Promise.all([
+    Order.aggregate([
+      { $match: { createdAt: { $gte: sixMonthsAgo } } },
+      {
+        $group: {
+          _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } },
+          revenue: { $sum: '$totalAmount' },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { '_id.year': 1, '_id.month': 1 } }
+    ]),
+    Order.aggregate([
+      { $group: { _id: '$status', count: { $sum: 1 } } }
+    ]),
+    Order.aggregate([
+      { $unwind: '$items' },
+      {
+        $group: {
+          _id: '$items.productId',
+          title: { $first: '$items.title' },
+          image: { $first: '$items.image' },
+          totalSold: { $sum: '$items.quantity' },
+          revenue: { $sum: { $multiply: ['$items.price', '$items.quantity'] } }
+        }
+      },
+      { $sort: { totalSold: -1 } },
+      { $limit: 5 }
+    ]),
+    User.aggregate([
+      { $match: { createdAt: { $gte: sixMonthsAgo } } },
+      {
+        $group: {
+          _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { '_id.year': 1, '_id.month': 1 } }
+    ])
+  ]);
+
+  return { monthlyRevenue, ordersByStatus, topProducts, monthlyUsers };
+}
+
 export async function fetchAllUsers(page = 1, limit = 20) {
   const skip = (page - 1) * limit;
   const [users, total] = await Promise.all([

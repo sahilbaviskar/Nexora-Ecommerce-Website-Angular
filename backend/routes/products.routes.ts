@@ -9,6 +9,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  bulkDeleteProducts,
   createProductSchema,
   updateProductSchema
 } from '../controllers/products.controller';
@@ -20,6 +21,7 @@ router.get('/', getProducts);
 router.get('/:slug', getProduct);
 router.post('/', protect, adminOnly, validate(createProductSchema), createProduct);
 router.put('/:id', protect, adminOnly, validate(updateProductSchema), updateProduct);
+router.delete('/bulk', protect, adminOnly, bulkDeleteProducts);
 router.delete('/:id', protect, adminOnly, deleteProduct);
 
 export default router;
